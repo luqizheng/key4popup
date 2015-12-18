@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>jQuery at-username plugin example</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+    
+    
+    
+  </head>
+
+  <body>
+        <div class="reply">
+          <textarea class="at-username" rows="4" cols="40">
+		  汽油涨价了，苹果涨价了@娃娃造型 ，鸡蛋涨价了，萝卜涨价了，方便面涨价了@文澜 我们欣喜的发现，空气不但没有涨价，而且里面的料还越来越多了.. ..但中国人还要坚强地活下去，因为墓地也涨价了
+		  </textarea>
+        </div>   
+    
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="../js/jquery.keypopup.js"></script>
+    <!--<script src="https://raw.github.com/mrkipling/jQuery-at-username/master/at-username/jquery.at-username.js"></script>-->
+    <script>
+
+   
+        $('textarea').keypopup({
+			onMatch:function(pos){
+				alert(JSON.stringify(pos));
+			}
+		});
+      
+
+    </script>
+
+  </body>
+
+</html>
