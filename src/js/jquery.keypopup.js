@@ -20,7 +20,7 @@
                 .data("_keypopup", options)
                 .mouseup(function (e) {
                     if (renderToLayer.call(this, options)) {
-                        fireEvent.call(fireEvent, options);
+                        fireOnMatch.call(this, options);
                     }
                     else {
                         options.onMiss();
@@ -30,15 +30,31 @@
                     return false;
                 })
                 .keyup(function (e) {
-                    console.log(e.which + "," + e.shiftKey)
-                    if (e.which == 38 || e.which == 39 || e.which == 40 || e.whic == 41 || (e.which === 50 && e.shiftKey)) {
-                        if (renderToLayer.call(this, options, (e.which === 50 && e.shiftKey))) {
-                            fireEvent.call(fireEvent, options);
+                    console.debug("keyup " + e.which);
+                    if(e.which==27){
+                        options.onMiss.call(this);
+                    }
+                    var useAtChar = (e.which === 50 && e.shiftKey);
+                    if (e.which == 38 || e.which == 39 || e.which == 40 || e.which == 37 || e.which == 8 || useAtChar) {
+                        if (renderToLayer.call(this, options, useAtChar)) {
+                            fireOnMatch.call(this, options);
                         }
                     }
                     e.stopPropagation();
                     e.preventDefault();
                     return false;
+                }).keydown(function (e) {
+                    console.debug("keydown " + e.which);
+                    //when the popup panel is showing, it should be focus on the textarea,
+                    //user use entier or down key boadrd, it should be insert to the text.
+                    if (e.which == 40 && options._state == 1) {  
+                        console.log("on focuse the panel.")
+                        e.stopPropagation();
+                        e.preventDefault();
+                        fireOnFocus.call(this, options);
+                        return false;
+                    }
+
                 });
             resetDiv.call(this);
         }
@@ -48,15 +64,22 @@
     function setText(options, strName) {
         var start = $(this).val().substr(0, options._curPos.start);
         var end = $(this).val().substr(options._curPos.end);
-        var result = start + strName + end;
+        var result = start + "@" + strName + end;
         $(this).val(result);
-        setCursor.call(this, options);
+        setCursor.call(this, options, strName.length);
+        options._state = 0;
+        options.onMiss.call(this);
     }
 
-    function fireEvent(options) {
+    function fireOnMatch(options) {
         var offset = $("#" + options.atId).offset();
         offset.top += $("#" + options.atId).height();
+        options._state = 1;
         options.onMatch.call(this, offset);
+    }
+    function fireOnFocus(options) {
+        options._state = 0;
+        options.onFocus.call(this);
     }
 
     function getSelection(options) {
@@ -75,21 +98,25 @@
         return content;
     }
 
-    function setCursor(options) {
-        var $self = $(this).focus();        
+    function setCursor(options, wordLength) {
+        var $self = $(this).focus();
         if (window.getSelection) {
-            console.debug("end curPos:" + options._curPos.end)
-            $self[0].selectionEnd = options._curPos.end+1;
-            $self[0].selectionStart=options._curPos.end+1;
+            var newLength = wordLength + options._curPos.start + 1;
+            console.debug("end curPos:" + newLength)
+            $self[0].selectionEnd = newLength;
+            $self[0].selectionStart = newLength;
         }
     }
 
-    function renderToLayer(options, bFocusPopup) {
+    function renderToLayer(options, byAtKeyUp) {
         //render the text which mouse focus to the layout behinde the textarea.
         var textarea = this,
-            content = getSelection.call(this, options);        
-        var matches = content.match(bFocusPopup ? (/@[^@\s]{0,20}$/g) : (/@[^@\s]{1,20}$/g));
-        if (matches != null) {
+            content = getSelection.call(this, options),
+            completeTag = "" // which target to fire the onMatchEvent, it should be a complete name when cursor on this word.;
+
+        var matches = content.match(/@[^@\s]{1,20}$/g);
+        var isMatch = matches != null
+        if (isMatch) {
             // try to find complete name.
             // match full char 
             var regx = /.*?[\-,\/,\|,\$,\+,\%,\&,\',\(,\),\*,\x20-\x2f,\x3a-\x40,\x5b-\x60,\x7b-\x7e,\x80-\xff,\u3000-\u3002,\u300a,\u300b,\u300e-\u3011,\u2014,\u2018,\u2019,\u201c,\u201d,\u2026,\u203b,\u25ce,\uff01-\uff5e,\uffe5]/
@@ -98,19 +125,26 @@
                 halfName = halfName[0].substring(0, halfName[0].length - 1)
             }
             content = content.substring(0, content.length - matches[0].length);
-            var completeTag = matches[0] + halfName;
-
-            options._curPos = {
-                start: content.length,
-                end: content.length + completeTag.length
-            }
-                        
-            options._target.html("<span id='" + options.atId + "'>" + completeTag + "</span>")
-
-            return true;
+            
+            completeTag = matches[0] + halfName; //without @ char.
+            
         }
+        else if (byAtKeyUp) // fire by @ keyup, it may no match anything, when cursor in the end of textbox.
+        {
+            content=content.substring(0,content.length-1);
+            //content hasn't any change. 
+            completeTag = "@";
+        }
+        console.debug("content without name:"+content+" complete name:"+completeTag)
+        options._curPos = {
+            start: content.length,
+            end: content.length + completeTag.length
+        }
+        options._target.html(content + "<span id='" + options.atId + "'>" + completeTag + "</span>");
 
-        return false;
+
+
+        return isMatch || byAtKeyUp;
     }
 
     function resetDiv() {
@@ -134,11 +168,14 @@
     var defaultOpt = {
         onMatch: false, // match pop up condition
         onMiss: false, // missmatch ,
+        onFocus: false, //for select start. 
+        
         atId: "at",
         _curPos: {
             start: 0,
             end: 0,
-        }
+        },
+        _state: 0 // 0 nothing , 1 onMatch.
     }
 
     function _shoJson(obj) {
