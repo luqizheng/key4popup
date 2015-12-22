@@ -12,6 +12,12 @@
                 end: 0,
                 tag: false,
             },
+            
+            isMatch:function(e)
+            {
+                return e.which === 50 && e.shiftKey;
+            },          
+                        
             _state: 0 // 0 nothing , 1 onMatch.
         }
 
@@ -45,7 +51,7 @@
                 })
                 .keyup(function (e) {
                     console.debug("keyup " + e.which);
-                    var useAtChar = (e.which === 50 && e.shiftKey),
+                    var isMatchKey = options.isMatch(e),
                         bMatchFocus = false;
                     if (e.which == 27) {
                         fire.miss.call(this, options);//ESC 
@@ -62,8 +68,8 @@
                             bMatchFocus = true;
                         }
                     }
-                    if (!bMatchFocus && (e.which == 38 || e.which == 39 || e.which == 40 || e.which == 37 || e.which == 8 || e.which == 229 || useAtChar)) {
-                        var method = renderToLayer.call(this, options, useAtChar) ? "match" : "miss";
+                    if (!bMatchFocus && (e.which == 38 || e.which == 39 || e.which == 40 || e.which == 37 || e.which == 8 || e.which == 229 || isMatchKey)) {
+                        var method = renderToLayer.call(this, options, isMatchKey) ? "match" : "miss";
                         fire[method].call(this, options);
                     }
                     e.stopPropagation();
@@ -189,7 +195,7 @@
     }
 
     function resetDiv() {
-        var $this = $(this)
+        var  self=this,$this = $(self)
             , options = $this.data("_keypopup")
             , offset = $this.offset()
             , size = {
@@ -200,15 +206,9 @@
             options._target = $('<div style="position:absolute;width;z-index:-99999;overflow:hidden;visiblity:hidden"></div>').appendTo("body");
         }
         options._target
-            .css("width", $this[0].clientWidth)
-            .css("height", $this[0].clientHeight)
+            .css("width", self.clientWidth)
+            .css("height", self.clientHeight)
             .css("left", offset.left)
             .css("top", offset.top);
-    }
-
-
-
-    function _shoJson(obj) {
-        alert(JSON.stringify(obj))
-    }
+    }   
 })(jQuery)
