@@ -21,7 +21,7 @@
             },
                 {
                     start: "#",
-                    end: "#",
+                    end: "# ",
                     isMatch: function (e) {
                         return e.which === 51 && e.shiftKey;
                     }

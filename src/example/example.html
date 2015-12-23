@@ -24,13 +24,18 @@
         </div>
     </div>
 
-
-
-    <div class="list-group" style="position:absolute;display:none">
-        <a href="#Leolu" class="list-group-item active">LeoLu</a>
-        <a href="#中文名" class="list-group-item">中文名</a>
-        <a href="#wht" class="list-group-item">wht</a>
-        <a href="#Michale" class="list-group-item">Michale</a>
+    <div class="list-group" style="position:absolute;display:none" id="name">
+        <a href="#Michael" class="list-group-item active">Michael</a>
+        <a href="#Leo" class="list-group-item">Leo</a>
+        <a href="#Bendy" class="list-group-item">Bendy</a>
+        <a href="#Tommy" class="list-group-item">Tommy</a>
+    </div>
+    
+    <div class="list-group" style="position:absolute;display:none" id="topic">
+        <a href="#CSharp" class="list-group-item active">CSharp</a>
+        <a href="#PHP" class="list-group-item">PHP</a>
+        <a href="#Java" class="list-group-item">Java</a>
+        <a href="#Javascript" class="list-group-item">Javascript</a>
     </div>
 
 
@@ -40,37 +45,36 @@
         $("body").mouseup(function(e){
 	           	$(".list-group").hide();
 	       });
-        
+        var $popMenu
         $('textarea').keypopup({
-			onMatch:function(pos){
-                matcher=pos;
-                $(".list-group").children()
-                .removeClass("active");
-                $(".list-group").children(":first").addClass("active");		
-				$(".list-group")
+			onMatch:function(pos){   
+                $popMenu=pos.start=="@"?$("#name"):$("#topic");             
+                $popMenu.children().removeClass("active");
+                $popMenu.children(":first").addClass("active");		
+				$popMenu
 					.css("left",pos.left)
 					.css("top",pos.top+5)                                        
 				.show() // show buy don't focus
 								
 			},
 			onMiss:function(){
-				$(".list-group").hide();
+                if($popMenu)
+				$popMenu.hide();
             },
             onFocus:function(){
                 console.log("example:use key down to focus the panel.")                
-                $(".list-group").children("a:first").removeClass("active").next().addClass("active").focus();
+                $popMenu.children("a:first").removeClass("active").next().addClass("active").focus();
             },
             onDefault:function(){
                 console.log("press enter to choice the first-one")
-                var text=$(".list-group").children("a:first").attr("href").substr(1);
+                var text=$popMenu.children("a:first").attr("href").substr(1);
                 console.log(text);
                 //$("textarea").keypopup('set',text)
                 return text;
-            }
-            
+            }            
 		});
 		
-		$(".list-group").keyup(function(e){
+		$("#name,#topic").keyup(function(e){
 			console.log("exapmle"+e.which)
 			if(e.which == 27 ){ //ESC
 				$(this).hide();
@@ -89,7 +93,7 @@
               case 13:
                 var text=$this.attr("href").substr(1);
                 console.log(text);
-                $("textarea").keypopup('set',"@"+text)
+                $("textarea").keypopup('set',text)
                 break;		  
 		   }	
 		   if($nextActive.length!=0)
