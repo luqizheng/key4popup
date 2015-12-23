@@ -14,17 +14,17 @@
 <body>
     <div class=nav>
         <div class=brand>
-          Demo1.   
+            Demo1.
         </div>
     </div>
-        
-    <div class=container>        
-    <div class="reply">
-        <textarea class="at-username" rows="4" cols="40">汽油涨价了，苹果涨价了@娃娃造型 ，鸡蛋涨价了，萝卜涨价了，方便面涨价了@文澜 我们欣喜的发现，空气不但没有涨价，而且里面的料还越来越多了.. ..但中国人还要坚强地活下去，因为墓地也涨价了</textarea>
-    </div>    
+
+    <div class=container>
+        <div class="reply">
+            <textarea class="at-username" rows="4" cols="40">汽油涨价了，苹果涨价了@娃娃造型 ，鸡蛋涨价了，萝卜涨价了，方便面涨价了@文澜 我们欣喜的发现，空气不但没有涨价，而且里面的料还越来越多了.. ..但中国人还要坚强地活下去，因为墓地也涨价了</textarea>
+        </div>
     </div>
 
-    
+
 
     <div class="list-group" style="position:absolute;display:none">
         <a href="#Leolu" class="list-group-item active">LeoLu</a>
@@ -38,11 +38,12 @@
 
     <script>
         $("body").mouseup(function(e){
-		$(".list-group").hide();
-	});
-   
+	           	$(".list-group").hide();
+	       });
+        
         $('textarea').keypopup({
 			onMatch:function(pos){
+                matcher=pos;
                 $(".list-group").children()
                 .removeClass("active");
                 $(".list-group").children(":first").addClass("active");		
@@ -88,7 +89,7 @@
               case 13:
                 var text=$this.attr("href").substr(1);
                 console.log(text);
-                $("textarea").keypopup('set',text)
+                $("textarea").keypopup('set',"@"+text)
                 break;		  
 		   }	
 		   if($nextActive.length!=0)
@@ -99,11 +100,18 @@
             e.stopPropagation();
             e.preventDefault();
             return false;
-		}).children("a").click(function(){
+		}).keydown(function(e){
+            if(e.which==38 || e.which==40)
+            {
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
+            }
+        })
+        .children("a").click(function(){
             var text=$(this).attr("href").substr(1);
-            console.log(text);
             $("textarea").keypopup('set',text)
-            $(".list-group").hide().children("a");
+            
         })
     </script>
 
