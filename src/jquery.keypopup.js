@@ -50,7 +50,7 @@
                     }                 
                 })
                 .keydown(function (e) {
-                    console.log("keydown-"+e.which)
+                    //console.log("keydown-"+e.which)
                     if (options._state == 1) { //had execute onMatch, it should pop up the menu, but DONOT　fosuc on int.
                         if (e.which == 40) { //press-down
                             fire.focus.call(this, options);//focus the popup menu.                            
@@ -64,7 +64,7 @@
                     }                    
                 })
                 .keyup(function (e) {                    
-                    console.log("keyup-"+e.which)
+                    //console.log("keyup-"+e.which)
                     var isMatch = false,
                         inputByIme = e.which == 229,  //microsoft ime return 229.;
                         isCursorCtrlKey = e.which == 38 || e.which == 39 || e.which == 40 || e.which == 37 || e.which == 8;
@@ -186,7 +186,7 @@
                 , start = content.substr(0, $tag.contentLen)
                 , end = content.substr(layoutLength + $tag.keyLen)
                 , result = start + strName + end; //add space avoid popup panel again.
-            console.log(JSON.stringify($tag));
+            //console.log(JSON.stringify($tag));
             $this.val(result);
             options._state = 0;
             options.onMiss.call(self);
