@@ -5,8 +5,7 @@
             onMatch: false, // match pop up condition
             onMiss: false, // missmatch ,
             onFocus: false, //for select start.
-            onDefault: false, //use press to select the first one. it should  return default one.
-            isShow: false,           
+            onDefault: false, //use press to select the first one. it should  return default one.            
             matches: [{
                 start: "@",
                 end: " ",
@@ -43,57 +42,58 @@
             $this
                 .data("_keypopup", options)
                 .mouseup(function (e) {
-                    layout.reset.call(this);
+                    layout.reset.call(this, options);
                     if (matcher.byCursor.call(this, options)) {
-
-                    }
-                    e.stopPropagation();
-                    e.preventDefault();
-                    return false;
+                        e.stopPropagation();
+                        e.preventDefault();
+                        return false;
+                    }                 
                 })
-                .keyup(function (e) {
-                    console.log(e.which)
-                    var bMatchFocus = false,
-                        isMatch = false,
-                        inputByIme = e.which == 229,  //microsoft ime return 229.;
-                        isCursorCtrlKey = inputByIme || e.which == 38 || e.which == 39 || e.which == 40 || e.which == 37 || e.which == 8;
-                    // up down left,right,BackSpace
-                                        
-                    if (e.which == 27 || e.which==32) {
-                        fire.miss.call(this, options);//ESC 
-                        return;
-                    }
+                .keydown(function (e) {
+                    console.log("keydown-"+e.which)
                     if (options._state == 1) { //had execute onMatch, it should pop up the menu, but DONOT　fosuc on int.
                         if (e.which == 40) { //press-down
-                            fire.focus.call(this, options);//focus the popup menu. 
-                            bMatchFocus = true;
+                            fire.focus.call(this, options);//focus the popup menu.                            
                         }
                         if (e.which == 13) { //input enter get the popup menut default value;
                             fire.default.call(this, options);
-                            bMatchFocus = true;
                         }
+                        e.preventDefault();
+                        e.stopPropagation();                        
+                        return false;
+                    }                    
+                })
+                .keyup(function (e) {                    
+                    console.log("keyup-"+e.which)
+                    var isMatch = false,
+                        inputByIme = e.which == 229,  //microsoft ime return 229.;
+                        isCursorCtrlKey = e.which == 38 || e.which == 39 || e.which == 40 || e.which == 37 || e.which == 8;
+                    // up down left,right,BackSpace
+                                        
+                    if (e.which == 27 || e.which == 32) {//ESC or space
+                        fire.miss.call(this, options);                  
+                        return;
                     }
-
-                    if (!bMatchFocus) {
-                        if (inputByIme || isCursorCtrlKey) {
-                            isMatch = matcher.byCursor.call(this, options, isCursorCtrlKey ? 1 : 0);
-                        }
-                        else {
-                            for (var i = 0; i < options.matches.length; i++) {
-                                var item = options.matches[i];
-                                if (item.isMatch(e)) {
-                                    isMatch = true;
-                                    matcher.always.call(this, options, { start: item.start, end: item.end });
-                                    break;
-                                }
+                    if (inputByIme || isCursorCtrlKey) {
+                        isMatch = matcher.byCursor.call(this, options, inputByIme ? 0 : 1);
+                    }
+                    else {
+                        //something to check 
+                        for (var i = 0; i < options.matches.length; i++) {
+                            var item = options.matches[i];
+                            if (item.isMatch(e)) {
+                                isMatch = true;
+                                matcher.always.call(this, options, { start: item.start, end: item.end });
+                                break;
                             }
                         }
                     }
+
                     e.stopPropagation();
                     e.preventDefault();
                     return false;
                 });
-            resetDiv.call(this);
+            layout.reset.call(this, options);
         }
         return $this;
     }
@@ -105,8 +105,9 @@
          * @param  {any} startLen include 1 charge after the matches[0].start.
          */
         byCursor: function (options, startLen) {
-            //render the text which mouse focus to the layout behinde the textarea.            
-            var len = startLen || 1,
+            //render the text which mouse focus to the layout behinde the textarea.
+                                    
+            var len = startLen === undefined ? 1 : startLen,
                 content = cursorMgr.getSelection.call(this, options);
             for (var i = 0; i < options.matches.length; i++) {
                 var item = options.matches[i];
@@ -115,7 +116,7 @@
                 var matches = content.match(reg);
                 if (matches != null) {
                     var matchInfo = {
-                        content: content.substring(0, content.length - matches[0].length),
+                        content: content,
                         key: matches[0],
                         start: item.start,
                         end: item.end
@@ -128,9 +129,8 @@
             return false;
         },
         always: function (options, matchInfo) {
-            var content = cursorMgr.getSelection.call(this, options);
-            matchInfo.content=content.substring(0, content.length - 1); //exculde matchKey
-            matchInfo.key="&nbsp;";            
+            matchInfo.content = cursorMgr.getSelection.call(this, options);
+            matchInfo.key = "@";
             matcher._fire.call(this, options, matchInfo);
 
         },
@@ -151,7 +151,7 @@
         match: function (options, matchInfo) { //defnined matcher.byCursor,
             var $tag = $("#" + options.atId);
             var offset = $tag.offset();
-            offset.top += $tag.height();
+            offset.top += $tag.height() - this.scrollTop;
             offset.start = matchInfo.start;
             offset.end = matchInfo.end;
 
@@ -164,8 +164,10 @@
             options._state = 0;
         },
         focus: function (options) {
-            options.onFocus.call(this);
-            options._state = 0;
+            if(typeof options.onFocus=="function"){
+                options.onFocus.call(this);
+                options._state = 0;
+            }
         }
     }
 
@@ -178,42 +180,43 @@
             var self = this
                 , strName = options._curMatch.start + strName + options._curMatch.end
                 , $this = $(this)
-                , $tag = options._target
-                , tagLength = $tag.find("#" + options.atId).text().length
-                , layoutLength = $tag.text().length
+                , $tag = options._target.data("_t")
+                , layoutLength = $tag.contentLen
                 , content = $this.val()
-                , start = content.substr(0, layoutLength - tagLength)
-                , end = content.substr(layoutLength)
+                , start = content.substr(0, $tag.contentLen)
+                , end = content.substr(layoutLength + $tag.keyLen)
                 , result = start + strName + end; //add space avoid popup panel again.
+            console.log(JSON.stringify($tag));
             $this.val(result);
             options._state = 0;
             options.onMiss.call(self);
-            cursorMgr.setPos.call(self, options, layoutLength - tagLength + strName.length);
+            cursorMgr.setPos.call(self, options, layoutLength + strName.length, $tag.scrollTop);
         },
         focus: function (options) {
-            cursorMgr.setPos.call(this, options, options._target.text().length);
+            cursorMgr.setPos.call(this, options, options._target.text().length, options._target.data("_t").scrollTop);
         }
 
     }
 
     var cursorMgr = {
         getSelection: function (options) {
-            var content, textarea = this;
+            var content, self = this;
             if (window.getSelection) {								
                 //statnd browser;
-                content = textarea.value.substring(0, textarea.selectionEnd);
+                content = self.value.substring(0, self.selectionEnd);
             } else {
                 var range = document.selection.createRange();
                 var dup_range = range.duplicate();
-                dup_range.moveToElementText(textarea);
+                dup_range.moveToElementText(self);
                 dup_range.setEndPoint('EndToEnd', range);
                 content = dup_range.text;
             }
             return content;
         },
-        setPos: function (options, newLength) {
+        setPos: function (options, newLength, scrollTop) {
             var self = this;
             $(self).focus();
+            self.scrollTop = scrollTop
             if (window.getSelection) {
                 self.selectionEnd = newLength;
                 self.selectionStart = newLength;
@@ -231,12 +234,11 @@
 
 
     var layout = {
-        reset: function () {
+        reset: function (options) {
             var self = this, $this = $(self)
-                , options = $this.data("_keypopup")
                 , offset = $this.offset();
             if (!options._target) {
-                options._target = $('<div style="position:absolute;width;z-index:-99999;overflow:hidden;visiblity:hidden"></div>').appendTo("body");
+                options._target = $('<div style="position:absolute;width;z-index:-99999;overflow:hidden;visiblity:hidden;word-wrap: break-word;word-break:normal;"></div>').appendTo("body");
             }
             options._target
                 .css("width", self.clientWidth)
@@ -249,12 +251,18 @@
          * @param  {any} matchContent, this value from matcher.checkRange struct is {content:<without key>, key:<key>}
          */
         render: function (options, matchContent) {
-            var content = matchContent.content.replace(/[\r\n]/g, "<br>").replace(/ /g,"&nbsp;");
-            var key = matchContent.key;
-            options._target.html(content + "<span id='" + options.atId + "'>" + key + "</span>");
+            var content = matchContent.content.substr(0, matchContent.content.length - matchContent.key.length);
+            var htmlcontent = content.replace(/[\r\n]/g, "<br>").replace(/ /g, "&nbsp;");
+            options._target.data("_t", {
+                contentLen: content.length,
+                keyLen: matchContent.key.length,
+                scrollTop: this.scrollTop
+            });//保存实际长度
+            
+            options._target.html(htmlcontent + "<span id='" + options.atId + "'>" + matchContent.key + "</span>");
         }
     }
 
 
-    var resetDiv = layout.reset;
+
 })(jQuery)

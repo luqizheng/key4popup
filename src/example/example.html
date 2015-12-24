@@ -18,9 +18,9 @@
         <h1>Example 1</h1>
         <form>
             <div class="form-group">
-            <textarea class="at-username" rows="4" cols="40">
-                汽油涨价了，苹果涨价了@娃娃造型 ，鸡蛋涨价了，萝卜涨价了，方便面涨价了@文澜 我们欣喜的发现，空气不但没有涨价，而且里面的料还越来越多了.. ..但中国人还要坚强地活下去，因为墓地也涨价了
-            </textarea>
+                <textarea class="at-username" rows="4" cols="40">
+                    汽油涨价了，苹果涨价了@娃娃造型 ，鸡蛋涨价了，萝卜涨价了，方便面涨价了@文澜 我们欣喜的发现，空气不但没有涨价，而且里面的料还越来越多了.. ..但中国人还要坚强地活下去，因为墓地也涨价了
+                </textarea>
             </div>
         </form>
 
@@ -50,7 +50,7 @@
         var $popMenu
         $('textarea').keypopup({
 			onMatch:function(pos){   
-                $popMenu=pos.start=="@"?$("#name"):$("#topic");             
+                $popMenu=$(pos.start=="@"?"#name":"#topic");             
                 $popMenu.children().removeClass("active");
                 $popMenu.children(":first").addClass("active");		
 				$popMenu
@@ -64,8 +64,8 @@
 				$popMenu.hide();
             },
             onFocus:function(){
-                console.log("example:use key down to focus the panel.")                
-                $popMenu.children("a:first").removeClass("active").next().addClass("active").focus();
+                //console.log("example:use key down to focus the panel.")                
+                $popMenu.children("a:first").focus();//.removeClass("active").next().addClass("active").focus();
             },
             onDefault:function(){
                 console.log("press enter to choice the first-one")
