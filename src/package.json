@@ -1,0 +1,44 @@
+{
+  "name": "key4popup",
+  "version": "1.0.0",
+  "description": "a plugin for popup menu for textarea",
+  "main": "gulpfile.js",
+  "directories": {
+    "example": "example"
+  },
+  "dependencies": {
+    "gulp": "^3.9.0",
+    "gulp-concat": "2.5.2",
+    "gulp-cssmin": "0.1.7",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "1.2.0",
+    "gulp-util": "^3.0.7",
+    "rimraf": "2.2.8",
+    "webpack": "^1.12.9"
+  },
+  "devDependencies": {
+    "gulp-uglify": "^1.2.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luqizheng/key4popup.git"
+  },
+  "keywords": [
+    "jquery",
+    "twitter",
+    "popup",
+    "@",
+    "#",
+    "hyphen",
+    "at"
+  ],
+  "author": "leo.lu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/luqizheng/key4popup/issues"
+  },
+  "homepage": "https://github.com/luqizheng/key4popup#readme"
+}

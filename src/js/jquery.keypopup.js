@@ -6,12 +6,7 @@
             onMiss: false, // missmatch ,
             onFocus: false, //for select start.
             onDefault: false, //use press to select the first one. it should  return default one.
-            isShow: false,
-            _curPos: {
-                start: 0,
-                end: 0,
-                tag: false,
-            },
+            isShow: false,           
             matches: [{
                 start: "@",
                 end: " ",
@@ -57,13 +52,14 @@
                     return false;
                 })
                 .keyup(function (e) {
+                    console.log(e.which)
                     var bMatchFocus = false,
                         isMatch = false,
                         inputByIme = e.which == 229,  //microsoft ime return 229.;
                         isCursorCtrlKey = inputByIme || e.which == 38 || e.which == 39 || e.which == 40 || e.which == 37 || e.which == 8;
                     // up down left,right,BackSpace
                                         
-                    if (e.which == 27) {
+                    if (e.which == 27 || e.which==32) {
                         fire.miss.call(this, options);//ESC 
                         return;
                     }
@@ -253,7 +249,7 @@
          * @param  {any} matchContent, this value from matcher.checkRange struct is {content:<without key>, key:<key>}
          */
         render: function (options, matchContent) {
-            var content = matchContent.content.replace(/[\r\n]/g, "<br>");
+            var content = matchContent.content.replace(/[\r\n]/g, "<br>").replace(/ /g,"&nbsp;");
             var key = matchContent.key;
             options._target.html(content + "<span id='" + options.atId + "'>" + key + "</span>");
         }
