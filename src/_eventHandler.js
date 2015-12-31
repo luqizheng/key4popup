@@ -2,12 +2,7 @@
 //return miss, onMatch,onFouce
 //miss, match,focus,
 //matchInfo
-var event_name_noop = "noop",
-    event_name_miss = "miss",
-    event_name_focus = "focus",
-    event_name_default = "default",
-    event_name_match="match";
-    
+
 var _eventHandler = {
     keyup: function (e, options) {
         //console.log("keyup-" + e.which)
