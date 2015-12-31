@@ -1,10 +1,16 @@
 /// <reference path="_layout.js" />
-
+var event_name_noop = "noop",
+    event_name_miss = "miss",
+    event_name_focus = "focus",
+    event_name_default = "default",
+    event_name_match="match";
+    
+    
 var _eventKey = {
     match: {
         create: function (matchInfo) {
             return {
-                e: "match",
+                //e: "match",
                 matchInfo: matchInfo,
                 invoke: function (options, matchInfo) { //defnined matcher.byCursor,                                    
                     _layout.render.call(this, options, matchInfo);
@@ -24,7 +30,7 @@ var _eventKey = {
 
         create: function () {
             return {
-                e: "miss",
+                //e: "miss",
                 invoke: function (options) {
                     options.onMiss.call(this)
                     options._state = 0;
@@ -37,22 +43,21 @@ var _eventKey = {
 
         create: function () {
             return {
-                e: "focus",
+                //e: "focus",
                 invoke: function (options) {
                     if (typeof options.onFocus == "function") {
                         options.onFocus.call(this);
                         options._state = 0;
-                    }
+                    }                   
                 },
                 bubby: false
             }
         }
     },
     "default": {
-
         create: function () {
             return {
-                e: "default",
+                //e: "default",
                 invoke: function (options) {
                     var d = options.onDefault.call(this, options);
                     if (d) {
@@ -64,10 +69,9 @@ var _eventKey = {
         }
     },
     "noop": {
-
         create: function () {
             return {
-                e: "noop",
+                //e: "noop",
                 invoke: function () { },
                 bubby: true,
             }

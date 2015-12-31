@@ -2,19 +2,13 @@
 
 var _layout = {
     reset: function (options) {
-
-        var offset = _extendLib.offset(this), self = this;
+        var self = this, offset = _extendLib.offset(self);
         _extendLib.setSizePos(options._target, {
             width: self.clientWidth,
             height: self.clientHeight,
             left: offset.left,
             top: offset.top
         })
-        /*options._target
-            .css("width", self.clientWidth)
-            .css("height", self.clientHeight)
-            .css("left", offset.left)
-            .css("top", offset.top);*/
     },    
     /**
      * @param  {any} options
@@ -23,14 +17,12 @@ var _layout = {
     render: function (options, matchInfo) {
 
         var content = matchInfo.content.substr(0, matchInfo.content.length - matchInfo.key.length); //内容，不包括
-        console.debug("callRender:+ reformat:" + content);
-        console.debug(JSON.stringify(matchInfo));
+        //console.debug("callRender:+ reformat:" + content);
+        //console.debug(JSON.stringify(matchInfo));
         var htmlcontent = content.replace(/[\r\n]/g, "<br>").replace(/ /g, "&nbsp;");
 
         if (!options.atId) {
-            var date = (new Date()).getTime();
-            var rad = Math.round(Math.random() * 201);
-            options.atId = "at" + rad + date;
+            options.atId = "at" + Math.round(Math.random() * 201) + (new Date()).getTime();
         }
 
         options.matchInfo = matchInfo;

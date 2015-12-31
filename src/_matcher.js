@@ -22,18 +22,14 @@ var _matcher = { //all matcher fire by it;
                     start: item.start,
                     end: item.end
                 }
-                //matcher._fire.call(this, options, matchInfo);
-                //return true;
             }
         }
-        //fire.miss.call(this, options);
-        //return und;
     },
-    always: function (options,e) {
+    always: function (options, e) {
         for (var i = 0; i < options.matches.length; i++) {
             var item = options.matches[i];
             if (item.isMatch(e)) {
-                return { 
+                return {
                     start: item.start,
                     end: item.end,
                     key: item.start,
@@ -45,8 +41,6 @@ var _matcher = { //all matcher fire by it;
                 break;
             }
         }
-
-
     }
     /*_fire: function (options, matchInfo) {
         layout.render.call(this, options, matchInfo);

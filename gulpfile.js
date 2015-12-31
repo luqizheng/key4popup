@@ -52,9 +52,10 @@ gulp.task("default", function (cb) {
         .pipe(rename({
             suffix: '-' + version + '.min'
         }))
+        .pipe(uglify())
         .pipe(gulp.dest('dist'));
 });
 
 gulp.task('watch', function () {
-    gulp.watch(["./src/","./example/"], ['default']);
+    gulp.watch(["./src/**", "./example/"], ['default']);
 });

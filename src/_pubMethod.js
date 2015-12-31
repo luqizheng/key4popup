@@ -7,18 +7,16 @@ var _pubMethod = {
     set: function (options, strName) {
 
         var self = this
-            , tagName = options.matchInfo.start + strName + options.matchInfo.end
             , matchInfo = options.matchInfo
-            , preContent = matchInfo.content.substr(0, matchInfo.content.length - matchInfo.key.length)
-            , layoutLength = preContent.length
-            , srcContent = this.value
+            , tagName = matchInfo.start + strName + matchInfo.end                        
+            , layoutLength = matchInfo.content.substr(0, matchInfo.content.length - matchInfo.key.length).length
+            , srcContent = self.value
             , start = srcContent.substr(0, layoutLength)
             , end = srcContent.substr(layoutLength + matchInfo.key.length)
-            , result = start + tagName + end; //add space avoid popup panel again.
-            
+            , result = start + tagName + end; //add space avoid popup panel again.           
          
         //console.log(JSON.stringify($tag));
-        this.value = result;
+        self.value = result;
         options._state = 0;
         options.onMiss.call(self);
         _cursorMgr.setPos.call(self, layoutLength + tagName.length, matchInfo.scrollTop);

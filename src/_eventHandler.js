@@ -2,47 +2,52 @@
 //return miss, onMatch,onFouce
 //miss, match,focus,
 //matchInfo
+var event_name_noop = "noop",
+    event_name_miss = "miss",
+    event_name_focus = "focus",
+    event_name_default = "default",
+    event_name_match="match";
+    
 var _eventHandler = {
     keyup: function (e, options) {
-
-        console.log("keyup-" + e.which)
+        //console.log("keyup-" + e.which)
         var
-            matchInfo = null,
             inputByIme = e.which == 229,  //microsoft ime return 229.;
-            isCursorCtrlKey = e.which == 38 || e.which == 39 || e.which == 40 || e.which == 37 || e.which == 8;
+            isCursorCtrlKey = e.which == 38 || e.which == 39 || e.which == 40 || e.which == 37 || e.which == 8,
+            eventName = event_name_noop
+            ;
         // up down left,right,BackSpace
                                         
         if (e.which == 27 || e.which == 32) {//ESC or space
+            eventName == event_name_miss
             //fire.miss.call(this, options);
-            return _eventKey.miss.create();
-        }
-
-        if (inputByIme || isCursorCtrlKey) {
-            matchInfo = _matcher.byCursor.call(this, options, inputByIme ? 0 : 1);
+            //return _eventKey.miss.create();
         }
         else {
-            matchInfo = _matcher.always.call(this, options, e)
+
         }
-        return matchInfo ? _eventKey.match.create(matchInfo) : _eventKey.noop.create();
+        var matchInfo = (inputByIme || isCursorCtrlKey)
+            ? _matcher.byCursor.call(this, options, inputByIme ? 0 : 1)
+            : _matcher.always.call(this, options, e)
+        if (matchInfo) {
+            eventName = event_name_match;
+        }
+        return _eventKey[eventName].create(matchInfo);
+        //eventName = matchInfo ? "match" _eventKey.match.create(matchInfo) : _eventKey.noop.create();
 
     },
     keydown: function (e, options) {
-        console.log("keydown-" + e.which)
+        //console.log("keydown-" + e.which)
+        var evnName = event_name_noop;
         if (options._state == 1) { //had execute onMatch, it should pop up the menu, but DONOT　fosuc on int.
-        
-            var evnName = null;
             if (e.which == 40) { //press-down
-                evnName = "focus"//focus the popup menu.
+                evnName = event_name_focus//focus the popup menu.
             }
             if (e.which == 13) { //input enter get the popup menut default value;
-                evnName = "default";
-            }
-            if (evnName) {
-                //fire[evnName].call(this, options);
-                return _eventKey[evnName].create();
+                evnName = event_name_default;
             }
         }
-        return _eventKey.noop.create();
+        return _eventKey[evnName].create();
     },
     mouseup: function (e, options) {
         _layout.reset.call(this, options);

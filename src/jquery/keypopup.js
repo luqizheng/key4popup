@@ -51,7 +51,7 @@ $.fn.keypopup = function (opt) {
             //console.log("event popup called " + info.e);
             info.invoke.call(self, options, info.matchInfo);
             if (info != undefined && !info.bubby) {
-                console.log("no bubby.")
+                //console.log("no bubby.")
                 e.preventDefault();
                 e.stopPropagation();
                 return false;
