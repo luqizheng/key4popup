@@ -63,7 +63,7 @@ gulp.task("default", function (cb) {
         .pipe(rename({
             suffix: '-' + version + '.min'
         }))
-        .pipe(uglify())
+        //.pipe(uglify())
         .pipe(gulp.dest('dist'));
     // build avalon; 
     runs = Make(avalonDist);

@@ -38,13 +38,13 @@ $.fn.keypopup = function (opt) {
     }
     else {
         options = $.extend({}, defaultOpt, opt)
-        createLayout(options);   
+        createLayout(options);
         _layout.reset.call(self, options);
         $this.data("_keypopup", options)
             .mouseup(innerHandler)
             .keydown(innerHandler)
             .keyup(innerHandler)
-            .focus(function(){ _layout.reset.call(this, options);});
+            .focus(function () { _layout.reset.call(this, options); });
 
         function innerHandler(e) {
             var info = _eventHandler[e.type].call(self, e, options)
@@ -57,13 +57,18 @@ $.fn.keypopup = function (opt) {
                 return false;
             }
         }
-        
+
     }
 
     function createLayout(options) {
+
         if (!options._target) {
-            options._target = $('<div style="position:absolute;width;z-index:-99999;overflow:hidden;visiblity:hidden;word-wrap: break-word;word-break:normal;"></div>')
-                .appendTo("body")[0];
+            var $keypop = $("#jqkeypopup");
+            if ($keypop.length == 0) {
+                $keypop = $('<div id="jqkeypopup" style="position:absolute;width;z-index:-99999;overflow:hidden;visiblity:hidden;word-wrap: break-word;word-break:normal;"></div>')
+                    .appendTo("body");
+            }
+            options._target = $keypop[0]
         }
     }
 

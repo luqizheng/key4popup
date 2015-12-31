@@ -18,16 +18,14 @@
 </head>
 
 <body>
-
-
     <div class="container">
         <h1>Example 1</h1>
         <form ms-controller="example">
             <div class="form-group">
 
                 <ora:keypopup config="textConfig">
-                    <textarea class="at-username" rows="4" cols="40">
-                        汽油涨价了，苹果涨价了@娃娃造型 ，鸡蛋涨价了，萝卜涨价了，方便面涨价了@文澜 我们欣喜的发现，空气不但没有涨价，而且里面的料还越来越多了.. ..但中国人还要坚强地活下去，因为墓地也涨价了
+                    <textarea class="at-username" rows="4" cols="40" ms-duplex="content">
+                        占位
                     </textarea>
                 </ora:keypopup>
             </div>
@@ -59,11 +57,13 @@
 	           	//$('textarea').keypopup('hide');
 	       });
         var $popMenu;
-        avalon.define({
+        var cur_matchInfo;
+        var exampleVM=avalon.define({
             $id:"example",
-            fff:"kjkjkjkjkjk",
+            content:"汽油涨价了，苹果涨价了@娃娃造型 ，鸡蛋涨价了，萝卜涨价了，方便面涨价了@文澜 我们欣喜的发现，空气不但没有涨价，而且里面的料还越来越多了.. ..但中国人还要坚强地活下去，因为墓地也涨价了",            
             textConfig:{
-                onMatch:function(matchInfo){   
+                onMatch:function(matchInfo){  
+                    cur_matchInfo=matchInfo; 
                      var pos=matchInfo.offset;
                     $popMenu=$(pos.start=="@"?"#name":"#topic");             
                     $popMenu.children().removeClass("active");
@@ -84,8 +84,14 @@
                 onDefault:function(){                
                     var text=$popMenu.children("a:first").attr("href").substr(1);
                     return text;
-                }           
-            }
+                },            
+                select:""  
+            },
+            
+            set:function(txt){
+                 this.textConfig.select = txt;
+             }
+            
         });
         
         
@@ -131,8 +137,9 @@
         })
         .children("a").click(function(){
             var text=$(this).attr("href").substr(1);
-            $("textarea").keypopup('set',text)
-            
+            //exampleVM.set(text);        
+            cur_matchInfo.set(text);    
+            alert(exampleVM.content);
         })
     </script>
 

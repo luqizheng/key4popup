@@ -8,13 +8,12 @@ var _pubMethod = {
 
         var self = this
             , matchInfo = options.matchInfo
-            , tagName = matchInfo.start + strName + matchInfo.end                        
+            , tagName = matchInfo.start + strName + matchInfo.end
             , layoutLength = matchInfo.content.substr(0, matchInfo.content.length - matchInfo.key.length).length
             , srcContent = self.value
             , start = srcContent.substr(0, layoutLength)
             , end = srcContent.substr(layoutLength + matchInfo.key.length)
-            , result = start + tagName + end; //add space avoid popup panel again.           
-         
+            , result = start + tagName + end; //add space avoid popup panel again.
         //console.log(JSON.stringify($tag));
         self.value = result;
         options._state = 0;

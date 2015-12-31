@@ -1,11 +1,12 @@
 /// <reference path="_layout.js" />
+/// <reference path="_pubMethod.js"/>
 var event_name_noop = "noop",
     event_name_miss = "miss",
     event_name_focus = "focus",
     event_name_default = "default",
-    event_name_match="match";
-    
-    
+    event_name_match = "match";
+
+
 var _eventKey = {
     match: {
         create: function (matchInfo) {
@@ -14,12 +15,22 @@ var _eventKey = {
                 matchInfo: matchInfo,
                 invoke: function (options, matchInfo) { //defnined matcher.byCursor,                                    
                     _layout.render.call(this, options, matchInfo);
+                    var self = this;
                     var tagele = document.getElementById(options.atId);
                     var offset = _extendLib.offset(tagele);
                     offset.top += _extendLib.height(tagele) - this.scrollTop;
                     matchInfo.offset = offset;
+                    matchInfo.set = function (newText) {
+                        _pubMethod.set.call(self, options, newText)
+                    }
+                    matchInfo.focus = function () {
+                        _pubMethod.focus(self, options)
+                    },
+                    matchInfo.hide = function () {
+                        _pubMethod.hide(self, options)
+                    }
                     options._state = 1;
-                    options.onMatch.call(this,matchInfo);
+                    options.onMatch.call(this, matchInfo);
                 },
                 bubby: false
             }
@@ -48,7 +59,7 @@ var _eventKey = {
                     if (typeof options.onFocus == "function") {
                         options.onFocus.call(this);
                         options._state = 0;
-                    }                   
+                    }
                 },
                 bubby: false
             }

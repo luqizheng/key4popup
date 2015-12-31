@@ -5,7 +5,7 @@
 
 var _eventHandler = {
     keyup: function (e, options) {
-        //console.log("keyup-" + e.which)
+        console.log("keyup-" + e.which)
         var
             inputByIme = e.which == 229,  //microsoft ime return 229.;
             isCursorCtrlKey = e.which == 38 || e.which == 39 || e.which == 40 || e.which == 37 || e.which == 8,
@@ -14,18 +14,14 @@ var _eventHandler = {
         // up down left,right,BackSpace
                                         
         if (e.which == 27 || e.which == 32) {//ESC or space
-            eventName == event_name_miss
-            //fire.miss.call(this, options);
-            //return _eventKey.miss.create();
+            eventName = event_name_miss            
         }
         else {
-
-        }
-        var matchInfo = (inputByIme || isCursorCtrlKey)
-            ? _matcher.byCursor.call(this, options, inputByIme ? 0 : 1)
-            : _matcher.always.call(this, options, e)
-        if (matchInfo) {
-            eventName = event_name_match;
+            var matchInfo = (inputByIme || isCursorCtrlKey)
+                ? _matcher.byCursor.call(this, options, inputByIme ? 0 : 1)
+                : _matcher.always.call(this, options, e)
+            if (matchInfo)
+                eventName = event_name_match;
         }
         return _eventKey[eventName].create(matchInfo);
         //eventName = matchInfo ? "match" _eventKey.match.create(matchInfo) : _eventKey.noop.create();

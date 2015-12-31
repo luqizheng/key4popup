@@ -12,7 +12,8 @@ avalon.component("ora:keypopup", {
         vm._target = document.body.appendChild(a.childNodes[0]);
         //vm._target=a.childNodes[0];
         vm.$template = ele.innerHTML;
-        //a.$posPanel = posBg;
+        //a.$posPanel = posBg;      
+      
     },
     $replace: 1,
     $template: "",
@@ -29,8 +30,8 @@ avalon.component("ora:keypopup", {
         };
         vm._mouseup = function (e) {
             innerHandler(e, vm)
-        };
-    },
+        };        
+    },    
     _keyup: false,
     _keydown: false,
     _mouseup: false,
