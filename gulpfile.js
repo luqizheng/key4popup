@@ -7,28 +7,54 @@ var gulp = require("gulp"),
     uglify = require("gulp-uglify"),
     gutil = require("gulp-util"),
     rename = require("gulp-rename"),
-    license=require("uglify-save-license");
-
+    license = require("uglify-save-license"),
+    tsc = require("gulp-typescript"),
+    webpack = require("webpack");
 var version = "1.0" //当前版本号
 var now = new Date();  //构建日期
 var date = now.getFullYear() + "." + (now.getMonth() + 1) + "." + now.getDate()
 
 var paths = {
-    src: "./src/*.js",
+    jquery: "./src/jquery*.js",
+    avalon: "",
+    util: [],
     dist: "dist",
-    name:"jquery.keypopup.js"
+    jqueryName: "jquery.keypopup.js"
+}
+var util = ["_cursorMgr.js", "_eventHandler.js", "_pubMethod.js", "_matcher.js", "_pubEvent.js", "_layout.js"];
+var jqueryDist = {
+    start: "jquery/header.txt",
+    end: "jquery/end.txt",
+    name: "jquery.keypopup.js",
+    main: "jquery/keypopup.js",
+    extends: "jquery/extendLib.js",
+    util: util
+
 }
 
-gulp.task("default", function (cb) {    
-    return gulp.src(paths.src)
-        .pipe(concat(paths.name))               
-        .pipe(uglify({preserveComments:license}))
+function Make(pathInfo) {
+    var result = ["0.summary.js", pathInfo.start, pathInfo.main, pathInfo.extends];
+    result = result.concat(pathInfo.util);
+    result.push(pathInfo.end);
+    for (var i = 0; i < result.length; i++) {
+        result[i] = './src/' + result[i];
+        console.log(result[i])
+    }
+    return result;
+}
+
+gulp.task("default", function (cb) {
+
+    var runs = Make(jqueryDist);
+    //build jquery.
+    return gulp.src(runs, { base: "./src/" })
+        .pipe(concat(jqueryDist.name))
         .pipe(rename({
-            suffix: '-'+version+'.min'
-        }))        
+            suffix: '-' + version + '.min'
+        }))
         .pipe(gulp.dest('dist'));
 });
 
 gulp.task('watch', function () {
-    gulp.watch(paths.src, ['default']);
+    gulp.watch(["./src/","./example/"], ['default']);
 });
