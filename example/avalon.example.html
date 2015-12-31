@@ -23,11 +23,11 @@
         <form ms-controller="example">
             <div class="form-group">
 
-                <ora:keypopup config="textConfig">
+                <ms:keypopup config="textConfig">
                     <textarea class="at-username" rows="4" cols="40" ms-duplex="content">
                         占位
                     </textarea>
-                </ora:keypopup>
+                </ms:keypopup>
             </div>
             <div ms-text="fff">
             </div>
@@ -84,14 +84,9 @@
                 onDefault:function(){                
                     var text=$popMenu.children("a:first").attr("href").substr(1);
                     return text;
-                },            
-                select:""  
-            },
-            
-            set:function(txt){
-                 this.textConfig.select = txt;
-             }
-            
+                }           
+            }          
+          
         });
         
         

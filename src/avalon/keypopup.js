@@ -1,8 +1,8 @@
 
 
-avalon.library("ora")
+//avalon.library("ora")
 
-avalon.component("ora:keypopup", {
+avalon.component("ms:keypopup", {
 
     $posPanel: 0,
     $init: function (vm, ele) {
@@ -18,7 +18,7 @@ avalon.component("ora:keypopup", {
     $replace: 1,
     $template: "",
     $$template: function (vm, ol) {
-        var events = "<textarea ms-on-keyup='_keyup($event)' ms-on-keydown='_keydown($event)' ms-on-mouseup='_mouseup($event)'";
+        var events = '<textarea ms-on-keyup="_keyup($event)" ms-on-keydown="_keydown($event)" ms-on-mouseup="_mouseup($event)" ';
         return this.$template.replace("<textarea", events);
     },
     $ready: function (vm) {
