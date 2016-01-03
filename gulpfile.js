@@ -9,73 +9,82 @@ var gulp = require("gulp"),
     rename = require("gulp-rename"),
     license = require("uglify-save-license"),
     tsc = require("gulp-typescript"),
-    webpack = require("webpack");
-var version = "1.0" //当前版本号
+    webpack = require("webpack"),
+    gfi = require("gulp-file-insert");;
+var version = "1.1" //当前版本号
 var now = new Date();  //构建日期
 var date = now.getFullYear() + "." + (now.getMonth() + 1) + "." + now.getDate()
 
-var paths = {
-    jquery: "./src/jquery*.js",
-    avalon: "",
-    util: [],
-    dist: "dist",
-    jqueryName: "jquery.keypopup.js"
-}
-var util = ["_cursorMgr.js", "_eventHandler.js", "_pubMethod.js", "_matcher.js", "_pubEvent.js", "_layout.js"];
+var gulpInsert = {
+    "/* summary */": "./src/0.summary.js",
+    "/* _cursorMgr.js */": "./src/_cursorMgr.js",
+    "/* _eventHandler.js */": "./src/_eventHandler.js",
+    "/* _pubMethod.js */": "./src/_pubMethod.js",
+    "/* _matcher.js */": "./src/_matcher.js",
+    "/* _pubEvent.js */": "./src/_pubEvent.js",
+    "/* _layout.js */": "./src/_layout.js"
+};
 
-var jqueryDist = {
-    start: "jquery/header.txt",
-    end: "jquery/end.txt",
-    name: "jquery.keypopup.js",
-    main: "jquery/keypopup.js",
-    extends: "jquery/extendLib.js",
-    util: util
-}
+var jqueryInsert = JSON.parse(JSON.stringify(gulpInsert));
+jqueryInsert["/* extendLib.js */"] = "./src/jquery/extendLib.js"
 
-var avalonDist = {
-    start: "avalon/header.txt",
-    end: "avalon/end.txt",
-    name: "avalon.keypopup.js",
-    main: "avalon/keypopup.js",
-    extends: "avalon/extendLib.js",
-    util: util
+var avalonInsert = JSON.parse(JSON.stringify(gulpInsert));
+avalonInsert["/* extendLib.js */"] = "./src/avalon/extendLib.js"
 
-}
-
-
-function Make(pathInfo) {
-    var result = ["0.summary.js", pathInfo.start, pathInfo.main, pathInfo.extends];
-    result = result.concat(pathInfo.util);
-    result.push(pathInfo.end);
-    for (var i = 0; i < result.length; i++) {
-        result[i] = './src/' + result[i];
-        console.log(result[i])
-    }
-    return result;
-}
-
-gulp.task("default", function (cb) {
-
-    var runs = Make(jqueryDist);
-    //build jquery.
-    var result = gulp.src(runs, { base: "./src/" })
-        .pipe(concat(jqueryDist.name))
-        .pipe(rename({
-            suffix: '-' + version + '.min'
-        }))
-        //.pipe(uglify())
-        .pipe(gulp.dest('dist'));
-    // build avalon; 
-    runs = Make(avalonDist);
-    result = gulp.src(runs, { base: "./src/" })
-        .pipe(concat(avalonDist.name))
-        .pipe(rename({
-            suffix: '-' + version + '.min'
-        }))
-        //.pipe(uglify())
-        .pipe(gulp.dest('dist'));
-    return result;
+gulp.task('default',["clean:js"],function(){
+    gulp.run(['avalon:min', 'jquery:min', 'jquery', 'avalon']);
 });
+
+gulp.task("clean:js", function (cb) {
+    rimraf("dist", cb);
+});
+gulp.task("avalon:min", function (cb) {
+    //avalon
+    return gulp.src("./src/avalon/keypopup.js")
+        .pipe(concat("avalon.keypopup.js"))
+        .pipe(gfi(avalonInsert))
+        .pipe(rename({
+            suffix: '-' + version + '.min'
+        }))
+        .pipe(uglify())
+        .pipe(gulp.dest('dist'));
+})
+
+gulp.task("jquery:min", function (cb) {
+
+    var result = gulp.src("./src/jquery/keypopup.js")
+        .pipe(concat("jquery.keypopup.js"))
+        .pipe(gfi(jqueryInsert))
+        .pipe(rename({
+            suffix: '-' + version + '.min'
+        }))
+        .pipe(uglify())
+        .pipe(gulp.dest('dist'));
+
+    return result;
+})
+gulp.task("jquery", function (cb) {
+    var result = gulp.src("./src/jquery/keypopup.js")
+        .pipe(concat("jquery.keypopup.js"))
+        .pipe(gfi(jqueryInsert))
+        .pipe(rename({
+            suffix: '-' + version
+        }))
+        .pipe(gulp.dest('dist'));
+
+    return result;
+})
+
+gulp.task("avalon", function (cb) {
+    //avalon
+    return gulp.src("./src/avalon/keypopup.js")
+        .pipe(concat("avalon.keypopup.js"))
+        .pipe(gfi(avalonInsert))
+        .pipe(rename({
+            suffix: '-' + version
+        }))
+        .pipe(gulp.dest('dist'));
+})
 
 gulp.task('watch', function () {
     gulp.watch(["./src/**", "./example/"], ['default']);
