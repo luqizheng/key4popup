@@ -13,7 +13,7 @@
     <script>
         avalon.config({loader:false})
     </script>
-    <script src="../dist/avalon.keypopup-1.0.min.js"></script>
+    <script src="../dist/avalon.keypopup-1.1.js"></script>
 
 </head>
 
@@ -31,7 +31,9 @@
             </div>
             <div ms-text="fff">
             </div>
-
+            <div class=form-action>
+                <button type=button id='popupTopic'>#</button>
+            </div>
         </form>
 
     </div>
@@ -54,8 +56,18 @@
 
     <script type="text/javascript">
         $("body").mouseup(function(e){
-	           	//$('textarea').keypopup('hide');
-	       });
+	        cur_matchInfo && cur_matchInfo.hide();
+	   });
+       $("#popupTopic").click(function(){
+           $popMenu = $("#topic")
+          var offset=$(this).offset();
+           $popMenu
+           .css("left",offset.left)
+           .css("top",offset.top)
+           .show();
+           cur_matchInfo.start="#";
+           cur_matchInfo.end="#";               
+       })
         var $popMenu;
         var cur_matchInfo;
         var exampleVM=avalon.define({
@@ -65,7 +77,7 @@
                 onMatch:function(matchInfo){  
                     cur_matchInfo=matchInfo; 
                      var pos=matchInfo.offset;
-                    $popMenu=$(pos.start=="@"?"#name":"#topic");             
+                    $popMenu=$(matchInfo.start=="@"?"#name":"#topic");             
                     $popMenu.children().removeClass("active");
                     $popMenu.children(":first").addClass("active");		
                     $popMenu
@@ -84,7 +96,10 @@
                 onDefault:function(){                
                     var text=$popMenu.children("a:first").attr("href").substr(1);
                     return text;
-                }           
+                }                ,
+                onLeave:function(hehe){
+                    cur_matchInfo=hehe; 
+                }      
             }          
           
         });
@@ -133,8 +148,8 @@
         .children("a").click(function(){
             var text=$(this).attr("href").substr(1);
             //exampleVM.set(text);        
-            cur_matchInfo.set(text);    
-            alert(exampleVM.content);
+            cur_matchInfo.set(text);   
+            
         })
     </script>
 

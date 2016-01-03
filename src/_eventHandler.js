@@ -5,36 +5,35 @@
 
 var _eventHandler = {
     keyup: function (e, options) {
-        console.log("keyup-" + e.which)
-        var
-            inputByIme = e.which == 229,  //microsoft ime return 229.;
-            isCursorCtrlKey = e.which == 38 || e.which == 39 || e.which == 40 || e.which == 37 || e.which == 8,
+        //console.log("keyup-" + e.which)
+        var inputKey = e.which,
+            //inputByIme = inputKey == 229,  //microsoft ime return 229.;
+            isCursorCtrlKey = inputKey == 38 || inputKey == 39 || inputKey == 40 || inputKey == 37 || inputKey == 8,
             eventName = event_name_noop
             ;
         // up down left,right,BackSpace
                                         
-        if (e.which == 27 || e.which == 32) {//ESC or space
-            eventName = event_name_miss            
+        if (inputKey == 27 || inputKey == 32) {//ESC or space
+            eventName = event_name_miss
         }
         else {
-            var matchInfo = (inputByIme || isCursorCtrlKey)
-                ? _matcher.byCursor.call(this, options, inputByIme ? 0 : 1)
-                : _matcher.always.call(this, options, e)
+            var matchInfo = // (inputByIme || isCursorCtrlKey)
+                _matcher.byCursor.call(this, options, isCursorCtrlKey ? 1 : 0) //get the matcherInfo 
+            //: _matcher.always.call(this, options, e)
             if (matchInfo)
                 eventName = event_name_match;
         }
         return _eventKey[eventName].create(matchInfo);
-        //eventName = matchInfo ? "match" _eventKey.match.create(matchInfo) : _eventKey.noop.create();
 
     },
     keydown: function (e, options) {
         //console.log("keydown-" + e.which)
-        var evnName = event_name_noop;
+        var evnName = event_name_noop, inputKey = e.which;
         if (options._state == 1) { //had execute onMatch, it should pop up the menu, but DONOT　fosuc on int.
-            if (e.which == 40) { //press-down
+            if (inputKey == 40) { //press-down
                 evnName = event_name_focus//focus the popup menu.
             }
-            if (e.which == 13) { //input enter get the popup menut default value;
+            if (inputKey == 13) { //input enter get the popup menut default value;
                 evnName = event_name_default;
             }
         }
@@ -44,5 +43,19 @@ var _eventHandler = {
         _layout.reset.call(this, options);
         var info = _matcher.byCursor.call(this, options);
         return info ? _eventKey.match.create(info) : _eventKey.noop.create();
+    },
+    mouseleave: function (e, options) {
+        _layout.reset.call(this, options);
+        var matchInfo = {
+            key: "",
+            start: "",
+            end: "",
+            content: _cursorMgr.getSelection.call(this),
+        }
+        if (!matchInfo.content) {
+            matchInfo.content = this.value;
+        }
+        //console.debug(options.matchInfo.content);
+        return _eventKey.leave.create(matchInfo);
     }
 }

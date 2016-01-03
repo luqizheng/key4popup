@@ -1,8 +1,0 @@
-/*
- jquery keypopup
- Project under the MIT.
- https://github.com/luqizheng/key4popup
- 
- Released under the MIT license
- //
-*/

@@ -1,4 +1,19 @@
 /// <reference path="_cursorMgr.js" />
+function matchInfo(){
+    this.key;
+    this.start;
+    this.end,
+    this.content,
+    this.offset=function(){
+        this.left;
+        this.top;
+    },
+    this.set=function(){
+        
+    }
+    this.hide=function(){}
+    this.focus=function(){}
+}
 var _matcher = { //all matcher fire by it;
     /**
      * fire by cursor in textarea
@@ -24,7 +39,8 @@ var _matcher = { //all matcher fire by it;
                 }
             }
         }
-    },
+    }
+    /*,
     always: function (options, e) {
         for (var i = 0; i < options.matches.length; i++) {
             var item = options.matches[i];
@@ -41,7 +57,7 @@ var _matcher = { //all matcher fire by it;
                 break;
             }
         }
-    }
+    }*/
     /*_fire: function (options, matchInfo) {
         layout.render.call(this, options, matchInfo);
         fire.match.call(this, options, matchInfo);

@@ -1,5 +1,6 @@
 /// <reference path="_layout.js" />
 /// <reference path="_pubMethod.js"/>
+
 var event_name_noop = "noop",
     event_name_miss = "miss",
     event_name_focus = "focus",
@@ -29,22 +30,44 @@ var _eventKey = {
                     matchInfo.hide = function () {
                         _pubMethod.hide(self, options)
                     }
+                    matchInfo.scrollTop = self.scrollTop;                      
+                    options.matchInfo = matchInfo;                  
                     options._state = 1;
-                    options.onMatch.call(this, matchInfo);
+                    options.onMatch.call(self, matchInfo);
                 },
                 bubby: false
             }
         }
 
     },
+    leave: {
+        create: function (matchInfo) {
+            return {
+                matchInfo: matchInfo,
+                invoke: function (options, matchInfo) {
+                    var self = this;
+                    matchInfo.set = function (newText) {
+                        _pubMethod.set.call(self, options, newText)
+                    }
+                    matchInfo.focus = function () {
+                        _pubMethod.focus.call(self, options)
+                    },
+                    matchInfo.hide = function () {
+                        _pubMethod.hide.call(self, options)
+                    },
+                    options._state = 0;
+                    options.onLeave.call(self, matchInfo);
+                }
+            }
+        }
+    },
     miss: {
-
         create: function () {
             return {
                 //e: "miss",
                 invoke: function (options) {
                     options.onMiss.call(this)
-                    options._state = 0;
+                    options._state = 0;  
                 },
                 bubby: true
             }

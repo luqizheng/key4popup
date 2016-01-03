@@ -1,3 +1,7 @@
+/* summary */
+
+(function(){
+
 /// <reference path="../_pubMethod.js" />
 /// <reference path="../_pubEvent.js" />
 /// <reference path="../_layout.js" />
@@ -71,9 +75,15 @@ $.fn.keypopup = function (opt) {
             options._target = $keypop[0]
         }
     }
-
-
     return $this;
 }
 
+/* _pubEvent.js */
+/* _pubMethod.js */
+/* _cursorMgr.js */
+/* _eventHandler.js */
+/* _layout.js */
+/* _matcher.js */
+/* extendLib.js */
 
+})(jQuery)

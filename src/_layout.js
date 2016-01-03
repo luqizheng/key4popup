@@ -23,10 +23,7 @@ var _layout = {
 
         if (!options.atId) {
             options.atId = "at" + Math.round(Math.random() * 201) + (new Date()).getTime();
-        }
-
-        options.matchInfo = matchInfo;
-        options.matchInfo.scrollTop = this.scrollTop;
+        }        
         /*(content: matchInfo.content,//实际长度，并不包含&space之后的信息
         key: matchInfo.key,
         scrollTop: this.scrollTop
