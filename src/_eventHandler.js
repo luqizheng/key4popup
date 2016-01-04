@@ -51,7 +51,10 @@ var _eventHandler = {
     },
     mouseleave: function (e, options) {
         _layout.reset.call(this, options);
-        var matchInfo = new MatchInfo(this, options)
+        var matchInfo = options.matchInfo;
+        if (options._status == 0 || !matchInfo) {
+            matchInfo = new MatchInfo(this, options)
+        }
         matchInfo.content = _cursorMgr.getSelection.call(this);
         if (!matchInfo.content) {
             matchInfo.content = this.value;

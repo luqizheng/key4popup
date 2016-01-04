@@ -11,11 +11,14 @@ var _eventKey = {
                 //e: "match",
                 matchInfo: matchInfo,
                 invoke: function (options, matchInfo) { //defnined matcher.byCursor,
-                    if(options.matchInfo){
+                    if (options.matchInfo) {
                         options.matchInfo.hide();
-                    }                                                                    
+                    }
                     options.matchInfo = matchInfo;
                     options._state = 1;
+                    if (!options.onMatch) {
+                        log("please onMatch fucntion  in options")
+                    }
                     options.onMatch.call(self, matchInfo);
                 },
                 bubby: false
@@ -29,16 +32,10 @@ var _eventKey = {
                 matchInfo: matchInfo,
                 invoke: function (options, matchInfo) {
                     var self = this;
-                    /*matchInfo.set = function (newText) {
-                        _pubMethod.set.call(self, options, newText)
-                    }
-                    matchInfo.focus = function () {
-                        _pubMethod.focus.call(self, options)
-                    },
-                    matchInfo.hide = function () {
-                        _pubMethod.hide.call(self, options)
-                    },*/
                     options._state = 0;
+                    if (!options.onLeave) {
+                        log("please onLeave fucntion  in options")
+                    }
                     options.onLeave.call(self, matchInfo);
                 }
             }
@@ -49,6 +46,10 @@ var _eventKey = {
             return {
                 //e: "miss",
                 invoke: function (options) {
+                    if (!options.onMiss) {
+                        log("please onMiss fucntion  in options")
+                    }
+
                     options.onMiss.call(this)
                     options._state = 0;
                 },
@@ -62,10 +63,11 @@ var _eventKey = {
             return {
                 //e: "focus",
                 invoke: function (options) {
-                    if (typeof options.onFocus == "function") {
-                        options.onFocus.call(this);
-                        options._state = 0;
+                    if (!options.onFocus) {
+                        log("please onMiss fucntion  in options")
                     }
+                    options.onFocus.call(this);
+                    options._state = 0;
                 },
                 bubby: false
             }
@@ -76,6 +78,9 @@ var _eventKey = {
             return {
                 //e: "default",
                 invoke: function (options) {
+                    if (!options.onDefault) {
+                        log("please onDefault fucntion  in options")
+                    }
                     var d = options.onDefault.call(this, options);
                     if (d) {
                         options.matchInfo.set(d);

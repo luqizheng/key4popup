@@ -3,7 +3,7 @@ var atId;
 var _layout = {
     reset: function (options) {
         var self = this, offset = _extendLib.offset(self);
-        _extendLib.setSizePos(options._target, {
+        _extendLib.setSizePos(options._layout, {
             width: self.clientWidth,
             height: self.clientHeight,
             left: offset.left,
@@ -21,10 +21,8 @@ var _layout = {
 
         if (!atId) {
             atId = "at" + Math.round(Math.random() * 201) + (new Date()).getTime();
-        }      
-      
-
-        options._target.innerHTML = htmlcontent + "<span id='" + atId + "'>" + matchInfo.key + "</span>";
+        }
+        options._layout.innerHTML = htmlcontent + "<span id='" + atId + "'>" + matchInfo.key + "</span>";
         return atId;
     }
 }

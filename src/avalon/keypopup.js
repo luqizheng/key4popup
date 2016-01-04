@@ -1,23 +1,39 @@
+/// <reference path="../_MatchInfo.js" />
+/// <reference path="../_globalDefined.js" />
+
 /* summary */
+
 (function (avalon) {
+    
+    /* global */
+
     avalon.component("ms:keypopup", {
         $init: function (vm, ele) {
             //console.log("call $init")
             //console.debug("oldEle" + ele.innerHTML);
-            var a = avalon.parseHTML('<div style="position:absolute;width;z-index:-99999;overflow:hidden;visiblity:hidden;word-wrap:break-word;word-break:normal;"></div>')
-            vm._target = document.body.appendChild(a.childNodes[0]);
             vm.$ta = ele.innerHTML;
+
+            var layoutEle = document.getElementById(layoutId)
+            if (layoutEle == null) {                
+                document.body.appendChild(avalon.parseHTML(layout).childNodes[0]);
+                layoutEle = document.getElementById(layoutId)
+            }
+            vm._layout = layoutEle;
+
         },
         $replace: 1,
         $ta: "",
         $$template: function (vm, ol) {
-            return this.$ta.replace(">", 'ms-on-keyup="_keyup($event)" ms-on-keydown="_keydown($event)" ms-on-mouseup="_mouseup($event)" ms-on-mouseleave="_mouseleave">');
+            return this.$ta.replace(">", 'ms-on-keyup="_keyup($event)" ms-on-keydown="_keydown($event)" ms-on-mouseup="_mouseup($event)" ms-on-mouseleave="_mouseleave" on-init="onInit">');
         },
-        $ready: function (vm) {
+        $ready: function (vm, ele) {
+            vm.matchInfo = new MatchInfo(ele, vm);
+            vm.matchInfo.content = ele.value;
+            vm.onInit(vm.matchInfo);
             vm._keyup = hd;
             vm._keydown = hd;
             vm._mouseup = hd;
-            vm._mouseleave=hd;
+            vm._mouseleave = hd;
             function hd(e) {
                 var self = e.target;
                 var info = _eventHandler[e.type].call(self, e, vm)
@@ -34,13 +50,14 @@
         _keyup: avalon.noop,
         _keydown: avalon.noop,
         _mouseup: avalon.noop,
-        _target: null,
+        _layout: null,
         _mouseleave: avalon.noop,
         onMatch: avalon.noop, // match pop up condition
         onMiss: avalon.noop, // missmatch ,
         onFocus: avalon.noop, //for select start.
         onDefault: avalon.noop, //use press to select the first one. it should  return default one.
         onLeave: avalon.noop,
+        onInit: avalon.noop,
         matches: [{
             start: "@",
             end: " ",
@@ -56,25 +73,13 @@
                 }
             }
         ],
-        matchInfo: {
-            content: '',
-            key: '',
-            start: '',
-            end: '',
-            offset: {
-                left: 0,
-                top: 0
-            },
-            set: avalon.noop,
-            focus: avalon.noop,
-            hide: avalon.noop
-        }
+        matchInfo: null
     })
 
   
     /* gulp file inert* DO NOT REMOVE FOLLOWING COMMENT*/
   
-      /* _pubEvent.js */
+    /* _pubEvent.js */
     /* _MatcherInfo.js */
     /* _cursorMgr.js */
     /* _eventHandler.js */

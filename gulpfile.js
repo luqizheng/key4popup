@@ -22,7 +22,8 @@ var gulpInsert = {
     "/* _MatcherInfo.js */": "./src/_MatchInfo.js",
     "/* _matcher.js */": "./src/_matcher.js",
     "/* _pubEvent.js */": "./src/_pubEvent.js",
-    "/* _layout.js */": "./src/_layout.js"
+    "/* _layout.js */": "./src/_layout.js",
+    "/* global */":"./src/_globalDefined.js"
 };
 
 var jqueryInsert = JSON.parse(JSON.stringify(gulpInsert));

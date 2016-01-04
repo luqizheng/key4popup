@@ -44,8 +44,8 @@ function MatchInfo(textarea, options) {
 
         var self = this.self,
             options = this.options,
-            matchInfo = this
-            , tagName = matchInfo.start + strName + matchInfo.end
+            matchInfo = this,
+            tagName = matchInfo.start + strName + matchInfo.end
             , layoutLength = matchInfo.content.substr(0, matchInfo.content.length - matchInfo.key.length).length
             , srcContent = self.value
             , start = srcContent.substr(0, layoutLength)

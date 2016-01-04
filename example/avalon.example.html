@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>jQuery at-username plugin example</title>
+    <title>avalon keypopup plugin</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <script src="../lib/jquery-1.11.3.min.js"></script>
@@ -28,7 +28,7 @@
                         占位
                     </textarea>
                 </ms:keypopup>
-            </div>           
+            </div>
             <div class=form-action>
                 <button type=button id='popupTopic'>#</button>
             </div>
@@ -97,9 +97,12 @@
                 }                ,
                 onLeave:function(hehe){
                     cur_matchInfo=hehe; 
-                }      
-            }          
-          
+                },
+                onInit:function(matchInfo){
+                    console.log(matchInfo);
+                    cur_matchInfo=matchInfo;
+                }
+            }
         });
         
         

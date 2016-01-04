@@ -1,26 +1,43 @@
+/// <reference path="../_MatchInfo.js" />
+/// <reference path="../_globalDefined.js" />
+
 /*!
 jquery.keypopup Copyright(c) 2011 Leo.lu  MIT Licensed
 https://github.com/luqizheng/key4popup 
 */
+
 (function (avalon) {
+    
+    var layoutId="_keypopup_"
+var layout='<div id="'+layoutId+'" style="position:absolute;width;z-index:-99999;overflow:hidden;visibility:hidden;word-wrap:break-word;word-break:normal;"></div>'
+
     avalon.component("ms:keypopup", {
         $init: function (vm, ele) {
             //console.log("call $init")
             //console.debug("oldEle" + ele.innerHTML);
-            var a = avalon.parseHTML('<div style="position:absolute;width;z-index:-99999;overflow:hidden;visiblity:hidden;word-wrap:break-word;word-break:normal;"></div>')
-            vm._target = document.body.appendChild(a.childNodes[0]);
             vm.$ta = ele.innerHTML;
+
+            var layoutEle = document.getElementById(layoutId)
+            if (layoutEle == null) {                
+                document.body.appendChild(avalon.parseHTML(layout).childNodes[0]);
+                layoutEle = document.getElementById(layoutId)
+            }
+            vm._layout = layoutEle;
+
         },
         $replace: 1,
         $ta: "",
         $$template: function (vm, ol) {
-            return this.$ta.replace(">", 'ms-on-keyup="_keyup($event)" ms-on-keydown="_keydown($event)" ms-on-mouseup="_mouseup($event)" ms-on-mouseleave="_mouseleave">');
+            return this.$ta.replace(">", 'ms-on-keyup="_keyup($event)" ms-on-keydown="_keydown($event)" ms-on-mouseup="_mouseup($event)" ms-on-mouseleave="_mouseleave" on-init="onInit">');
         },
-        $ready: function (vm) {
+        $ready: function (vm, ele) {
+            vm.matchInfo = new MatchInfo(ele, vm);
+            vm.matchInfo.content = ele.value;
+            vm.onInit(vm.matchInfo);
             vm._keyup = hd;
             vm._keydown = hd;
             vm._mouseup = hd;
-            vm._mouseleave=hd;
+            vm._mouseleave = hd;
             function hd(e) {
                 var self = e.target;
                 var info = _eventHandler[e.type].call(self, e, vm)
@@ -37,13 +54,14 @@ https://github.com/luqizheng/key4popup
         _keyup: avalon.noop,
         _keydown: avalon.noop,
         _mouseup: avalon.noop,
-        _target: null,
+        _layout: null,
         _mouseleave: avalon.noop,
         onMatch: avalon.noop, // match pop up condition
         onMiss: avalon.noop, // missmatch ,
         onFocus: avalon.noop, //for select start.
         onDefault: avalon.noop, //use press to select the first one. it should  return default one.
         onLeave: avalon.noop,
+        onInit: avalon.noop,
         matches: [{
             start: "@",
             end: " ",
@@ -59,25 +77,13 @@ https://github.com/luqizheng/key4popup
                 }
             }
         ],
-        matchInfo: {
-            content: '',
-            key: '',
-            start: '',
-            end: '',
-            offset: {
-                left: 0,
-                top: 0
-            },
-            set: avalon.noop,
-            focus: avalon.noop,
-            hide: avalon.noop
-        }
+        matchInfo: null
     })
 
   
     /* gulp file inert* DO NOT REMOVE FOLLOWING COMMENT*/
   
-      /// <reference path="_layout.js" />
+    /// <reference path="_layout.js" />
 /// <reference path="_MatchInfo.js"/>
 
 
@@ -90,11 +96,14 @@ var _eventKey = {
                 //e: "match",
                 matchInfo: matchInfo,
                 invoke: function (options, matchInfo) { //defnined matcher.byCursor,
-                    if(options.matchInfo){
+                    if (options.matchInfo) {
                         options.matchInfo.hide();
-                    }                                                                    
+                    }
                     options.matchInfo = matchInfo;
                     options._state = 1;
+                    if (!options.onMatch) {
+                        log("please onMatch fucntion  in options")
+                    }
                     options.onMatch.call(self, matchInfo);
                 },
                 bubby: false
@@ -108,16 +117,10 @@ var _eventKey = {
                 matchInfo: matchInfo,
                 invoke: function (options, matchInfo) {
                     var self = this;
-                    /*matchInfo.set = function (newText) {
-                        _pubMethod.set.call(self, options, newText)
-                    }
-                    matchInfo.focus = function () {
-                        _pubMethod.focus.call(self, options)
-                    },
-                    matchInfo.hide = function () {
-                        _pubMethod.hide.call(self, options)
-                    },*/
                     options._state = 0;
+                    if (!options.onLeave) {
+                        log("please onLeave fucntion  in options")
+                    }
                     options.onLeave.call(self, matchInfo);
                 }
             }
@@ -128,6 +131,10 @@ var _eventKey = {
             return {
                 //e: "miss",
                 invoke: function (options) {
+                    if (!options.onMiss) {
+                        log("please onMiss fucntion  in options")
+                    }
+
                     options.onMiss.call(this)
                     options._state = 0;
                 },
@@ -141,10 +148,11 @@ var _eventKey = {
             return {
                 //e: "focus",
                 invoke: function (options) {
-                    if (typeof options.onFocus == "function") {
-                        options.onFocus.call(this);
-                        options._state = 0;
+                    if (!options.onFocus) {
+                        log("please onMiss fucntion  in options")
                     }
+                    options.onFocus.call(this);
+                    options._state = 0;
                 },
                 bubby: false
             }
@@ -155,6 +163,9 @@ var _eventKey = {
             return {
                 //e: "default",
                 invoke: function (options) {
+                    if (!options.onDefault) {
+                        log("please onDefault fucntion  in options")
+                    }
                     var d = options.onDefault.call(this, options);
                     if (d) {
                         options.matchInfo.set(d);
@@ -220,8 +231,8 @@ function MatchInfo(textarea, options) {
 
         var self = this.self,
             options = this.options,
-            matchInfo = this
-            , tagName = matchInfo.start + strName + matchInfo.end
+            matchInfo = this,
+            tagName = matchInfo.start + strName + matchInfo.end
             , layoutLength = matchInfo.content.substr(0, matchInfo.content.length - matchInfo.key.length).length
             , srcContent = self.value
             , start = srcContent.substr(0, layoutLength)
@@ -248,7 +259,12 @@ function MatchInfo(textarea, options) {
     
 /// <reference path="./lib/lib.d.ts" />
 
-
+function log() {
+    if (window.console) {
+        // http://stackoverflow.com/questions/8785624/how-to-safely-wrap-console-log
+        Function.apply.call(console.log, console, arguments)
+    }
+}
 
 var _cursorMgr = {
     //this必须是 textarea对象 
@@ -336,7 +352,10 @@ var _eventHandler = {
     },
     mouseleave: function (e, options) {
         _layout.reset.call(this, options);
-        var matchInfo = new MatchInfo(this, options)
+        var matchInfo = options.matchInfo;
+        if (options._status == 0 || !matchInfo) {
+            matchInfo = new MatchInfo(this, options)
+        }
         matchInfo.content = _cursorMgr.getSelection.call(this);
         if (!matchInfo.content) {
             matchInfo.content = this.value;
@@ -350,7 +369,7 @@ var atId;
 var _layout = {
     reset: function (options) {
         var self = this, offset = _extendLib.offset(self);
-        _extendLib.setSizePos(options._target, {
+        _extendLib.setSizePos(options._layout, {
             width: self.clientWidth,
             height: self.clientHeight,
             left: offset.left,
@@ -368,10 +387,8 @@ var _layout = {
 
         if (!atId) {
             atId = "at" + Math.round(Math.random() * 201) + (new Date()).getTime();
-        }      
-      
-
-        options._target.innerHTML = htmlcontent + "<span id='" + atId + "'>" + matchInfo.key + "</span>";
+        }
+        options._layout.innerHTML = htmlcontent + "<span id='" + atId + "'>" + matchInfo.key + "</span>";
         return atId;
     }
 }
