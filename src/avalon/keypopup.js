@@ -75,7 +75,7 @@
     /* gulp file inert* DO NOT REMOVE FOLLOWING COMMENT*/
   
       /* _pubEvent.js */
-    /* _pubMethod.js */
+    /* _MatcherInfo.js */
     /* _cursorMgr.js */
     /* _eventHandler.js */
     /* _layout.js */

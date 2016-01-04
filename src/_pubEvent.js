@@ -1,11 +1,7 @@
 /// <reference path="_layout.js" />
-/// <reference path="_pubMethod.js"/>
+/// <reference path="_MatchInfo.js"/>
 
-var event_name_noop = "noop",
-    event_name_miss = "miss",
-    event_name_focus = "focus",
-    event_name_default = "default",
-    event_name_match = "match";
+
 
 
 var _eventKey = {
@@ -14,24 +10,11 @@ var _eventKey = {
             return {
                 //e: "match",
                 matchInfo: matchInfo,
-                invoke: function (options, matchInfo) { //defnined matcher.byCursor,                                    
-                    _layout.render.call(this, options, matchInfo);
-                    var self = this;
-                    var tagele = document.getElementById(options.atId);
-                    var offset = _extendLib.offset(tagele);
-                    offset.top += _extendLib.height(tagele) - this.scrollTop;
-                    matchInfo.offset = offset;
-                    matchInfo.set = function (newText) {
-                        _pubMethod.set.call(self, options, newText)
-                    }
-                    matchInfo.focus = function () {
-                        _pubMethod.focus(self, options)
-                    },
-                    matchInfo.hide = function () {
-                        _pubMethod.hide(self, options)
-                    }
-                    matchInfo.scrollTop = self.scrollTop;                      
-                    options.matchInfo = matchInfo;                  
+                invoke: function (options, matchInfo) { //defnined matcher.byCursor,
+                    if(options.matchInfo){
+                        options.matchInfo.hide();
+                    }                                                                    
+                    options.matchInfo = matchInfo;
                     options._state = 1;
                     options.onMatch.call(self, matchInfo);
                 },
@@ -46,7 +29,7 @@ var _eventKey = {
                 matchInfo: matchInfo,
                 invoke: function (options, matchInfo) {
                     var self = this;
-                    matchInfo.set = function (newText) {
+                    /*matchInfo.set = function (newText) {
                         _pubMethod.set.call(self, options, newText)
                     }
                     matchInfo.focus = function () {
@@ -54,7 +37,7 @@ var _eventKey = {
                     },
                     matchInfo.hide = function () {
                         _pubMethod.hide.call(self, options)
-                    },
+                    },*/
                     options._state = 0;
                     options.onLeave.call(self, matchInfo);
                 }
@@ -67,7 +50,7 @@ var _eventKey = {
                 //e: "miss",
                 invoke: function (options) {
                     options.onMiss.call(this)
-                    options._state = 0;  
+                    options._state = 0;
                 },
                 bubby: true
             }
@@ -95,7 +78,7 @@ var _eventKey = {
                 invoke: function (options) {
                     var d = options.onDefault.call(this, options);
                     if (d) {
-                        _pubMethod.set.call(this, options, d);
+                        options.matchInfo.set(d);
                     }
                 },
                 bubby: false

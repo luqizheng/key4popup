@@ -19,7 +19,7 @@ var gulpInsert = {
     "/* summary */": "./src/0.summary.js",
     "/* _cursorMgr.js */": "./src/_cursorMgr.js",
     "/* _eventHandler.js */": "./src/_eventHandler.js",
-    "/* _pubMethod.js */": "./src/_pubMethod.js",
+    "/* _MatcherInfo.js */": "./src/_MatchInfo.js",
     "/* _matcher.js */": "./src/_matcher.js",
     "/* _pubEvent.js */": "./src/_pubEvent.js",
     "/* _layout.js */": "./src/_layout.js"

@@ -1,7 +1,14 @@
 /// <reference path="_matcher.js" />
+/// <reference path="_layout.js" />
+/// <reference path="_pubEvent.js"/>
 //return miss, onMatch,onFouce
 //miss, match,focus,
 //matchInfo
+var event_name_noop = "noop",
+    event_name_miss = "miss",
+    event_name_focus = "focus",
+    event_name_default = "default",
+    event_name_match = "match";
 
 var _eventHandler = {
     keyup: function (e, options) {
@@ -17,9 +24,7 @@ var _eventHandler = {
             eventName = event_name_miss
         }
         else {
-            var matchInfo = // (inputByIme || isCursorCtrlKey)
-                _matcher.byCursor.call(this, options, isCursorCtrlKey ? 1 : 0) //get the matcherInfo 
-            //: _matcher.always.call(this, options, e)
+            var matchInfo = _matcher.byCursor.call(this, options, isCursorCtrlKey ? 1 : 0) //get the matcherInfo            
             if (matchInfo)
                 eventName = event_name_match;
         }
@@ -46,12 +51,8 @@ var _eventHandler = {
     },
     mouseleave: function (e, options) {
         _layout.reset.call(this, options);
-        var matchInfo = {
-            key: "",
-            start: "",
-            end: "",
-            content: _cursorMgr.getSelection.call(this),
-        }
+        var matchInfo = new MatchInfo(this, options)
+        matchInfo.content = _cursorMgr.getSelection.call(this);
         if (!matchInfo.content) {
             matchInfo.content = this.value;
         }
