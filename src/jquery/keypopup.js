@@ -43,8 +43,8 @@
 
         if (typeof opt == "string") {
             options = $this.data(optKey);
-            var arg = [options].concat([].slice.call(arguments, 1));
-            options.matchInfo[opt].apply(self, arg)
+            var arg = [].concat([].slice.call(arguments, 1));
+            options.matchInfo[opt](arg)
         }
         else {
             options = $.extend({}, defaultOpt, opt)

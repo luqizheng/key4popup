@@ -16,8 +16,7 @@ var _eventHandler = {
         var inputKey = e.which,
             //inputByIme = inputKey == 229,  //microsoft ime return 229.;
             isCursorCtrlKey = inputKey == 38 || inputKey == 39 || inputKey == 40 || inputKey == 37 || inputKey == 8,
-            eventName = event_name_noop
-            ;
+            eventName = event_name_noop;
         // up down left,right,BackSpace
                                         
         if (inputKey == 27 || inputKey == 32) {//ESC or space

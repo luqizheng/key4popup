@@ -7,7 +7,7 @@ var gulp = require("gulp"),
     uglify = require("gulp-uglify"),
     gutil = require("gulp-util"),
     rename = require("gulp-rename"),
-    license = require("uglify-save-license"),
+    saveLicense = require("uglify-save-license"),
     tsc = require("gulp-typescript"),
     webpack = require("webpack"),
     gfi = require("gulp-file-insert");;
@@ -40,14 +40,14 @@ gulp.task("clean:js", function (cb) {
     rimraf("dist", cb);
 });
 gulp.task("avalon:min", function (cb) {
-    //avalon
+    //avalon    
     return gulp.src("./src/avalon/keypopup.js")
         .pipe(concat("avalon.keypopup.js"))
         .pipe(gfi(avalonInsert))
         .pipe(rename({
             suffix: '-' + version + '.min'
         }))
-        .pipe(uglify())
+        .pipe(uglify({output:{comments:saveLicense }}))
         .pipe(gulp.dest('dist'));
 })
 
@@ -59,7 +59,7 @@ gulp.task("jquery:min", function (cb) {
         .pipe(rename({
             suffix: '-' + version + '.min'
         }))
-        .pipe(uglify())
+        .pipe(uglify({output:{comments:saveLicense }}))
         .pipe(gulp.dest('dist'));
 
     return result;

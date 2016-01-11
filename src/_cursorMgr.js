@@ -1,12 +1,6 @@
 
 /// <reference path="./lib/lib.d.ts" />
 
-function log() {
-    if (window.console) {
-        // http://stackoverflow.com/questions/8785624/how-to-safely-wrap-console-log
-        Function.apply.call(console.log, console, arguments)
-    }
-}
 
 var _cursorMgr = {
     //this必须是 textarea对象 

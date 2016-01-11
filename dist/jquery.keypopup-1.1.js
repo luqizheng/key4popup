@@ -10,8 +10,15 @@ https://github.com/luqizheng/key4popup
     /// <reference path="../_layout.js" />
     /// <reference path="../_globalDefined.js" />
     
-    var layoutId="_keypopup_"
-var layout='<div id="'+layoutId+'" style="position:absolute;width;z-index:-99999;overflow:hidden;visibility:hidden;word-wrap:break-word;word-break:normal;"></div>'
+    var layoutId = "_keypopup_"
+var layout = '<div id="' + layoutId + '" style="position:absolute;width;z-index:-99999;overflow:hidden;visibility:hidden;word-wrap:break-word;word-break:normal;"/>';
+function log() {
+    if (window.console) {
+        // http://stackoverflow.com/questions/8785624/how-to-safely-wrap-console-log
+        Function.apply.call(console.log, console, arguments)
+    }
+}
+
 
     var optKey = "_keypopup",
         defaultOpt = {
@@ -47,8 +54,8 @@ var layout='<div id="'+layoutId+'" style="position:absolute;width;z-index:-99999
 
         if (typeof opt == "string") {
             options = $this.data(optKey);
-            var arg = [options].concat([].slice.call(arguments, 1));
-            options.matchInfo[opt].apply(self, arg)
+            var arg = [].concat([].slice.call(arguments, 1));
+            options.matchInfo[opt](arg)
         }
         else {
             options = $.extend({}, defaultOpt, opt)
@@ -265,12 +272,6 @@ function MatchInfo(textarea, options) {
     
 /// <reference path="./lib/lib.d.ts" />
 
-function log() {
-    if (window.console) {
-        // http://stackoverflow.com/questions/8785624/how-to-safely-wrap-console-log
-        Function.apply.call(console.log, console, arguments)
-    }
-}
 
 var _cursorMgr = {
     //this必须是 textarea对象 
@@ -323,8 +324,7 @@ var _eventHandler = {
         var inputKey = e.which,
             //inputByIme = inputKey == 229,  //microsoft ime return 229.;
             isCursorCtrlKey = inputKey == 38 || inputKey == 39 || inputKey == 40 || inputKey == 37 || inputKey == 8,
-            eventName = event_name_noop
-            ;
+            eventName = event_name_noop;
         // up down left,right,BackSpace
                                         
         if (inputKey == 27 || inputKey == 32) {//ESC or space

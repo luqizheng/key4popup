@@ -1,5 +1,6 @@
 /// <reference path="../_MatchInfo.js" />
 /// <reference path="../_globalDefined.js" />
+/// <reference path="../_eventHandler.js" />
 
 /* summary */
 
@@ -11,10 +12,9 @@
         $init: function (vm, ele) {
             //console.log("call $init")
             //console.debug("oldEle" + ele.innerHTML);
-            vm.$ta = ele.innerHTML;
-
+            vm.$ta = ele.innerHTML;            
             var layoutEle = document.getElementById(layoutId)
-            if (layoutEle == null) {                
+            if (layoutEle == null) {
                 document.body.appendChild(avalon.parseHTML(layout).childNodes[0]);
                 layoutEle = document.getElementById(layoutId)
             }
@@ -22,7 +22,7 @@
 
         },
         $replace: 1,
-        $ta: "",
+        $ta: "",        
         $$template: function (vm, ol) {
             return this.$ta.replace(">", 'ms-on-keyup="_keyup($event)" ms-on-keydown="_keydown($event)" ms-on-mouseup="_mouseup($event)" ms-on-mouseleave="_mouseleave" on-init="onInit">');
         },
@@ -47,17 +47,17 @@
                 }
             }
         },
-        _keyup: avalon.noop,
-        _keydown: avalon.noop,
-        _mouseup: avalon.noop,
+        _keyup: false,
+        _keydown: false,
+        _mouseup: false,
         _layout: null,
-        _mouseleave: avalon.noop,
-        onMatch: avalon.noop, // match pop up condition
-        onMiss: avalon.noop, // missmatch ,
-        onFocus: avalon.noop, //for select start.
-        onDefault: avalon.noop, //use press to select the first one. it should  return default one.
-        onLeave: avalon.noop,
-        onInit: avalon.noop,
+        _mouseleave: false,
+        onMatch: false, // match pop up condition
+        onMiss: false, // missmatch ,
+        onFocus: false, //for select start.
+        onDefault: false, //use press to select the first one. it should  return default one.
+        onLeave: false,
+        onInit: false,
         matches: [{
             start: "@",
             end: " ",

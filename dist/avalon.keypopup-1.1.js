@@ -1,5 +1,6 @@
 /// <reference path="../_MatchInfo.js" />
 /// <reference path="../_globalDefined.js" />
+/// <reference path="../_eventHandler.js" />
 
 /*!
 jquery.keypopup Copyright(c) 2011 Leo.lu  MIT Licensed
@@ -8,17 +9,23 @@ https://github.com/luqizheng/key4popup
 
 (function (avalon) {
     
-    var layoutId="_keypopup_"
-var layout='<div id="'+layoutId+'" style="position:absolute;width;z-index:-99999;overflow:hidden;visibility:hidden;word-wrap:break-word;word-break:normal;"></div>'
+    var layoutId = "_keypopup_"
+var layout = '<div id="' + layoutId + '" style="position:absolute;width;z-index:-99999;overflow:hidden;visibility:hidden;word-wrap:break-word;word-break:normal;"/>';
+function log() {
+    if (window.console) {
+        // http://stackoverflow.com/questions/8785624/how-to-safely-wrap-console-log
+        Function.apply.call(console.log, console, arguments)
+    }
+}
+
 
     avalon.component("ms:keypopup", {
         $init: function (vm, ele) {
             //console.log("call $init")
             //console.debug("oldEle" + ele.innerHTML);
-            vm.$ta = ele.innerHTML;
-
+            vm.$ta = ele.innerHTML;            
             var layoutEle = document.getElementById(layoutId)
-            if (layoutEle == null) {                
+            if (layoutEle == null) {
                 document.body.appendChild(avalon.parseHTML(layout).childNodes[0]);
                 layoutEle = document.getElementById(layoutId)
             }
@@ -26,7 +33,7 @@ var layout='<div id="'+layoutId+'" style="position:absolute;width;z-index:-99999
 
         },
         $replace: 1,
-        $ta: "",
+        $ta: "",        
         $$template: function (vm, ol) {
             return this.$ta.replace(">", 'ms-on-keyup="_keyup($event)" ms-on-keydown="_keydown($event)" ms-on-mouseup="_mouseup($event)" ms-on-mouseleave="_mouseleave" on-init="onInit">');
         },
@@ -51,17 +58,17 @@ var layout='<div id="'+layoutId+'" style="position:absolute;width;z-index:-99999
                 }
             }
         },
-        _keyup: avalon.noop,
-        _keydown: avalon.noop,
-        _mouseup: avalon.noop,
+        _keyup: false,
+        _keydown: false,
+        _mouseup: false,
         _layout: null,
-        _mouseleave: avalon.noop,
-        onMatch: avalon.noop, // match pop up condition
-        onMiss: avalon.noop, // missmatch ,
-        onFocus: avalon.noop, //for select start.
-        onDefault: avalon.noop, //use press to select the first one. it should  return default one.
-        onLeave: avalon.noop,
-        onInit: avalon.noop,
+        _mouseleave: false,
+        onMatch: false, // match pop up condition
+        onMiss: false, // missmatch ,
+        onFocus: false, //for select start.
+        onDefault: false, //use press to select the first one. it should  return default one.
+        onLeave: false,
+        onInit: false,
         matches: [{
             start: "@",
             end: " ",
@@ -259,12 +266,6 @@ function MatchInfo(textarea, options) {
     
 /// <reference path="./lib/lib.d.ts" />
 
-function log() {
-    if (window.console) {
-        // http://stackoverflow.com/questions/8785624/how-to-safely-wrap-console-log
-        Function.apply.call(console.log, console, arguments)
-    }
-}
 
 var _cursorMgr = {
     //this必须是 textarea对象 
@@ -317,8 +318,7 @@ var _eventHandler = {
         var inputKey = e.which,
             //inputByIme = inputKey == 229,  //microsoft ime return 229.;
             isCursorCtrlKey = inputKey == 38 || inputKey == 39 || inputKey == 40 || inputKey == 37 || inputKey == 8,
-            eventName = event_name_noop
-            ;
+            eventName = event_name_noop;
         // up down left,right,BackSpace
                                         
         if (inputKey == 27 || inputKey == 32) {//ESC or space
