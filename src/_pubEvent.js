@@ -95,7 +95,7 @@ var _eventKey = {
             return {
                 //e: "noop",
                 invoke: function () { },
-                bubby: true,
+                bubby: true
             }
         }
     }

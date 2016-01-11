@@ -70,13 +70,12 @@ function log() {
 
             function innerHandler(e) {
                 var info = _eventHandler[e.type].call(self, e, options)
-                //console.log("event popup called " + info.e);
+                
                 info.invoke.call(self, options, info.matchInfo);
-                if (info != undefined && !info.bubby) {
-                    //console.log("no bubby.")
+                if (info != undefined && !info.bubby) {                
                     e.preventDefault();
                     e.stopPropagation();
-                    return false;
+                    //return false;
                 }
             }
 
@@ -193,40 +192,12 @@ var _eventKey = {
             return {
                 //e: "noop",
                 invoke: function () { },
-                bubby: true,
+                bubby: true
             }
         }
     }
 };
     /// <reference path="_cursorMgr.js" />
-/*var _pubMethod = {    
-    set: function (options, strName) {
-
-        var self = this
-            , matchInfo = options.matchInfo
-            , tagName = matchInfo.start + strName + matchInfo.end
-            , layoutLength = matchInfo.content.substr(0, matchInfo.content.length - matchInfo.key.length).length
-            , srcContent = self.value
-            , start = srcContent.substr(0, layoutLength)
-            , end = srcContent.substr(layoutLength + matchInfo.key.length)
-            , result = start + tagName + end; //add space avoid popup panel again.
-        //console.log(JSON.stringify($tag));
-        self.value = result;
-        options._state = 0;
-        options.onMiss.call(self);
-        _cursorMgr.setPos.call(self, layoutLength + tagName.length, matchInfo.scrollTop);
-    },
-    focus: function (options) {
-        var matchInfo = options.matchInfo;
-        _cursorMgr.setPos.call(this, options, matchInfo.content.length, matchInfo.scrollTop);
-    },
-    hide: function (options) {
-        _eventKey.miss.create().invoke.call(this, options);
-        //.miss.call(this,options);
-    }
-
-}*/
-
 
 function MatchInfo(textarea, options) {
     this.self = textarea
@@ -239,6 +210,7 @@ function MatchInfo(textarea, options) {
         this.left;
         this.top;
     },
+    this.bookmark = null; // for ie678
     this.scrollTop = 0;
     this.set = function (strName) {
 
@@ -250,24 +222,22 @@ function MatchInfo(textarea, options) {
             , srcContent = self.value
             , start = srcContent.substr(0, layoutLength)
             , end = srcContent.substr(layoutLength + matchInfo.key.length)
-            , result = start + tagName + end; //add space avoid popup panel again.
-        //console.log(JSON.stringify($tag));
+            , result = start + tagName + end; //add space avoid popup panel again.        
         self.value = result;
         options._state = 0;
         options.onMiss.call(self);
-        _cursorMgr.setPos.call(self, layoutLength + tagName.length, matchInfo.scrollTop);
+        _cursorMgr.setPos.call(self, layoutLength + tagName.length, matchInfo.scrollTop, matchInfo);
     }
     this.hide = function () {
         var options = this.options;
-        var matchInfo = this.options.matchInfo;
-        _eventKey.miss.create().invoke.call(self, options)
-        _cursorMgr.setPos.call(this.slef, options,
-            matchInfo.content.length,
-            matchInfo.scrollTop);
+        //var matchInfo = this.options.matchInfo;
+        _eventKey.miss.create().invoke.call(this.self, options)
+        //_cursorMgr.setPos.call(this.self, matchInfo.content.length,matchInfo.scrollTop);
     }
     this.focus = function () {
         _eventKey.miss.create().invoke.call(this.self, this.options);
     }
+
 }
     
 /// <reference path="./lib/lib.d.ts" />
@@ -278,10 +248,10 @@ var _cursorMgr = {
     getSelection: function () {
         var content, self = this;
         if (window.getSelection) {								
-            //statnd browser;
+            //statnd browser;        
             content = self.value.substring(0, self.selectionEnd);
         } else {
-
+            //for ie 678            
             var range = document.selection.createRange(),
                 dup_range = range.duplicate();
             dup_range.moveToElementText(self);
@@ -295,15 +265,20 @@ var _cursorMgr = {
         self.focus();
         self.scrollTop = scrollTop
         if (window.getSelection) {
+
             self.selectionStart = self.selectionEnd = newLength;
         }
         else if (self.createTextRange) {
+
             var range = self.createTextRange()
-                , action = 'character';
+                , action = 'character'
             range.collapse(true);
-            range.moveEnd(action, newLength);
-            range.moveStart(action, newLength);
+            range.moveStart(action, newLength);            
+            range.select();
+
+
         }
+
     }
 }
     /// <reference path="_matcher.js" />
@@ -320,7 +295,7 @@ var event_name_noop = "noop",
 
 var _eventHandler = {
     keyup: function (e, options) {
-        //console.log("keyup-" + e.which)
+       
         var inputKey = e.which,
             //inputByIme = inputKey == 229,  //microsoft ime return 229.;
             isCursorCtrlKey = inputKey == 38 || inputKey == 39 || inputKey == 40 || inputKey == 37 || inputKey == 8,
@@ -339,7 +314,7 @@ var _eventHandler = {
 
     },
     keydown: function (e, options) {
-        //console.log("keydown-" + e.which)
+       
         var evnName = event_name_noop, inputKey = e.which;
         if (options._state == 1) { //had execute onMatch, it should pop up the menu, but DONOT　fosuc on int.
             if (inputKey == 40) { //press-down
@@ -366,7 +341,7 @@ var _eventHandler = {
         if (!matchInfo.content) {
             matchInfo.content = this.value;
         }
-        //console.debug(options.matchInfo.content);
+       
         return _eventKey.leave.create(matchInfo);
     }
 }
@@ -413,6 +388,7 @@ var _matcher = { //all matcher fire by it;
                                     
         var len = startLen === undefined ? 1 : startLen,
             self = this,
+            result = new MatchInfo(self, options),
             content = _cursorMgr.getSelection.call(self);
         for (var i = 0; i < options.matches.length; i++) {
             var item = options.matches[i];
@@ -421,7 +397,7 @@ var _matcher = { //all matcher fire by it;
             var matches = content.match(reg);
             if (matches != null) {
                 //It should be match.
-                var result = new MatchInfo(self, options)
+                //var result = new MatchInfo(self, options)
                 result.content = content;
                 result.key = matches[0];
                 result.start = item.start;

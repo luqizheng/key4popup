@@ -7,10 +7,10 @@ var _cursorMgr = {
     getSelection: function () {
         var content, self = this;
         if (window.getSelection) {								
-            //statnd browser;
+            //statnd browser;        
             content = self.value.substring(0, self.selectionEnd);
         } else {
-
+            //for ie 678            
             var range = document.selection.createRange(),
                 dup_range = range.duplicate();
             dup_range.moveToElementText(self);
@@ -24,14 +24,19 @@ var _cursorMgr = {
         self.focus();
         self.scrollTop = scrollTop
         if (window.getSelection) {
+
             self.selectionStart = self.selectionEnd = newLength;
         }
         else if (self.createTextRange) {
+
             var range = self.createTextRange()
-                , action = 'character';
+                , action = 'character'
             range.collapse(true);
-            range.moveEnd(action, newLength);
-            range.moveStart(action, newLength);
+            range.moveStart(action, newLength);            
+            range.select();
+
+
         }
+
     }
 }

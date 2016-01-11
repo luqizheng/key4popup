@@ -10,9 +10,7 @@
 
     avalon.component("ms:keypopup", {
         $init: function (vm, ele) {
-            //console.log("call $init")
-            //console.debug("oldEle" + ele.innerHTML);
-            vm.$ta = ele.innerHTML;            
+            vm.$ta = ele.innerHTML;
             var layoutEle = document.getElementById(layoutId)
             if (layoutEle == null) {
                 document.body.appendChild(avalon.parseHTML(layout).childNodes[0]);
@@ -22,42 +20,43 @@
 
         },
         $replace: 1,
-        $ta: "",        
+        $ta: "",
         $$template: function (vm, ol) {
             return this.$ta.replace(">", 'ms-on-keyup="_keyup($event)" ms-on-keydown="_keydown($event)" ms-on-mouseup="_mouseup($event)" ms-on-mouseleave="_mouseleave" on-init="onInit">');
         },
         $ready: function (vm, ele) {
             vm.matchInfo = new MatchInfo(ele, vm);
             vm.matchInfo.content = ele.value;
-            vm.onInit(vm.matchInfo);
-            vm._keyup = hd;
-            vm._keydown = hd;
-            vm._mouseup = hd;
-            vm._mouseleave = hd;
+            vm.onInit(vm.matchInfo);           
+            //vm._mouseleave = hd;
             function hd(e) {
                 var self = e.target;
                 var info = _eventHandler[e.type].call(self, e, vm)
-                //console.log("event popup called " + info.e);
+
                 info.invoke.call(self, vm, info.matchInfo);
                 if (info != undefined && !info.bubby) {
-                    //console.log("no bubby.")
+
                     e.preventDefault();
                     e.stopPropagation();
                     return false;
                 }
             }
+            vm._keyup = hd;
+            vm._keydown = hd;
+            vm._mouseup = hd;
         },
+        _state: 0,
         _keyup: false,
         _keydown: false,
         _mouseup: false,
         _layout: null,
-        _mouseleave: false,
+        _mouseleave: avalon.noop,
         onMatch: false, // match pop up condition
         onMiss: false, // missmatch ,
         onFocus: false, //for select start.
         onDefault: false, //use press to select the first one. it should  return default one.
-        onLeave: false,
-        onInit: false,
+        onLeave: avalon.noop,
+        onInit: avalon.noop,
         matches: [{
             start: "@",
             end: " ",

@@ -12,7 +12,7 @@ var event_name_noop = "noop",
 
 var _eventHandler = {
     keyup: function (e, options) {
-        //console.log("keyup-" + e.which)
+       
         var inputKey = e.which,
             //inputByIme = inputKey == 229,  //microsoft ime return 229.;
             isCursorCtrlKey = inputKey == 38 || inputKey == 39 || inputKey == 40 || inputKey == 37 || inputKey == 8,
@@ -31,7 +31,7 @@ var _eventHandler = {
 
     },
     keydown: function (e, options) {
-        //console.log("keydown-" + e.which)
+       
         var evnName = event_name_noop, inputKey = e.which;
         if (options._state == 1) { //had execute onMatch, it should pop up the menu, but DONOT　fosuc on int.
             if (inputKey == 40) { //press-down
@@ -58,7 +58,7 @@ var _eventHandler = {
         if (!matchInfo.content) {
             matchInfo.content = this.value;
         }
-        //console.debug(options.matchInfo.content);
+       
         return _eventKey.leave.create(matchInfo);
     }
 }

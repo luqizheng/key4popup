@@ -59,13 +59,12 @@
 
             function innerHandler(e) {
                 var info = _eventHandler[e.type].call(self, e, options)
-                //console.log("event popup called " + info.e);
+                
                 info.invoke.call(self, options, info.matchInfo);
-                if (info != undefined && !info.bubby) {
-                    //console.log("no bubby.")
+                if (info != undefined && !info.bubby) {                
                     e.preventDefault();
                     e.stopPropagation();
-                    return false;
+                    //return false;
                 }
             }
 

@@ -14,7 +14,15 @@
         avalon.config({loader:false})
     </script>
     <script src="../dist/avalon.keypopup-1.1.js"></script>
-
+    <script>
+        avalon.libraries.ms.$init = function(vm) {
+            for (var i in vm) {
+                if (vm.hasOwnProperty(i) && typeof vm[i] === "function") {
+                    vm[i] = vm[i].bind(vm)
+                }
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -24,7 +32,7 @@
             <div class="form-group">
 
                 <ms:keypopup config="textConfig">
-                    <textarea class="at-username" rows="4" cols="40" ms-duplex="content" style="width:400px;resize:none">
+                    <textarea class="at-username" rows="4" cols="80" ms-duplex="content" style="width:600px;resize:none">
                         占位
                     </textarea>
                 </ms:keypopup>
@@ -52,11 +60,15 @@
     </div>
 
 
-
+    <button id='test'>test</button>
     <script type="text/javascript">
-        $("body").mouseup(function(e){
-	        cur_matchInfo && cur_matchInfo.hide();
+        $(document).mouseup(function(e){
+            console.log("body accept click for hide the pop up")
+//	        cur_matchInfo && cur_matchInfo.hide();
 	   });
+       
+      
+       
        $("#popupTopic").click(function(){
            $popMenu = $("#topic")
           var offset=$(this).offset();
@@ -99,8 +111,7 @@
                 onLeave:function(hehe){
                     cur_matchInfo=hehe; 
                 },
-                onInit:function(matchInfo){
-                    console.log(matchInfo);
+                onInit:function(matchInfo){                    
                     cur_matchInfo=matchInfo;
                 }
             }
@@ -126,8 +137,7 @@
 			    $nextActive=$this.next();				
 				break;	
               case 13:
-                var text=$this.attr("href").substr(1);
-                console.log(text);
+                var text=$this.attr("href").substr(1);                
                 $("textarea").keypopup('set',text)
                 break;		  
 		   }	
@@ -148,11 +158,12 @@
             }
         })
         .children("a").click(function(){
-            var text=$(this).attr("href").substr(1);
-            //exampleVM.set(text);        
+            var text=$(this).attr("href").substr(1);                    
             cur_matchInfo.set(text);   
             
         })
+        
+     
     </script>
 
 

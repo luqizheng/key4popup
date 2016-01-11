@@ -12,6 +12,7 @@ var _matcher = { //all matcher fire by it;
                                     
         var len = startLen === undefined ? 1 : startLen,
             self = this,
+            result = new MatchInfo(self, options),
             content = _cursorMgr.getSelection.call(self);
         for (var i = 0; i < options.matches.length; i++) {
             var item = options.matches[i];
@@ -20,7 +21,7 @@ var _matcher = { //all matcher fire by it;
             var matches = content.match(reg);
             if (matches != null) {
                 //It should be match.
-                var result = new MatchInfo(self, options)
+                //var result = new MatchInfo(self, options)
                 result.content = content;
                 result.key = matches[0];
                 result.start = item.start;

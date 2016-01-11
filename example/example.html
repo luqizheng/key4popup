@@ -13,12 +13,12 @@
 
 <body>
 
-
+ <button id='test'>test</button>
     <div class=container>
         <h1>Example 1</h1>
         <form>
             <div class="form-group">
-                <textarea class="at-username" rows="4" cols="40">
+                <textarea class="at-username" rows="8" cols="140" id="target">
                     汽油涨价了，苹果涨价了@娃娃造型 ，鸡蛋涨价了，萝卜涨价了，方便面涨价了@文澜 我们欣喜的发现，空气不但没有涨价，而且里面的料还越来越多了.. ..但中国人还要坚强地活下去，因为墓地也涨价了
                 </textarea>
             </div>
@@ -71,9 +71,12 @@
             onDefault:function(){                
                 var text=$popMenu.children("a:first").attr("href").substr(1);
                 return text;
-            }            
-		});
-		
+            },
+            onLeave:function(matchInfo){
+                console.log("set the default matchInfo")
+            }
+                        
+		});	
 		$("#name,#topic").keyup(function(e){			
 			if(e.which == 27 ){ //ESC
 				$(this).hide();
