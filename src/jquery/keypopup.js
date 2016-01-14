@@ -15,7 +15,7 @@
             onMiss: false, // missmatch ,
             onFocus: false, //for select start.
             onDefault: false, //use press to select the first one. it should  return default one.
-            onLeave: false,
+            onCursorChanged: false,
             matches: [{
                 start: "@",
                 end: " ",
@@ -51,23 +51,17 @@
             createLayout(options);
             _layout.reset.call(self, options);
             $this.data(optKey, options)
-                .mouseup(innerHandler)
-                .keydown(innerHandler)
-                .keyup(innerHandler)
-                .mouseleave(innerHandler)
-                .focus(function () { _layout.reset.call(this, options); });
+                .mouseup(hd)
+                .keydown(hd)
+                .keyup(hd)
 
-            function innerHandler(e) {
-                var info = _eventHandler[e.type].call(self, e, options)
-                
-                info.invoke.call(self, options, info.matchInfo);
-                if (info != undefined && !info.bubby) {                
-                    e.preventDefault();
-                    e.stopPropagation();
-                    //return false;
-                }
+            function hd(e) {
+                return globalEventHandler(options, e)
             }
 
+            options.matchInfo = new MatchInfo(self, options);
+            options.matchInfo.content = self.value;
+            options.onCursorChanged(options.matchInfo);
         }
 
         function createLayout(options) {

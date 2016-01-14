@@ -10,8 +10,7 @@ function MatchInfo(textarea, options) {
     this.offset = function () {
         this.left;
         this.top;
-    },
-    this.bookmark = null; // for ie678
+    },    
     this.scrollTop = 0;
     this.set = function (strName) {
 
@@ -32,11 +31,14 @@ function MatchInfo(textarea, options) {
     this.hide = function () {
         var options = this.options;
         //var matchInfo = this.options.matchInfo;
-        _eventKey.miss.create().invoke.call(this.self, options)
+        _pubEvent.miss.create().invoke.call(this.self, options)
         //_cursorMgr.setPos.call(this.self, matchInfo.content.length,matchInfo.scrollTop);
     }
     this.focus = function () {
-        _eventKey.miss.create().invoke.call(this.self, this.options);
+        _pubEvent.miss.create().invoke.call(this.self, this.options);
+    }
+    this.isMatch=function(){
+        return !!this.key;
     }
 
 }

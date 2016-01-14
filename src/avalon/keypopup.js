@@ -1,9 +1,9 @@
+/* summary */
+
+
 /// <reference path="../_MatchInfo.js" />
 /// <reference path="../_globalDefined.js" />
 /// <reference path="../_eventHandler.js" />
-
-/* summary */
-
 (function (avalon) {
     
     /* global */
@@ -27,19 +27,10 @@
         $ready: function (vm, ele) {
             vm.matchInfo = new MatchInfo(ele, vm);
             vm.matchInfo.content = ele.value;
-            vm.onInit(vm.matchInfo);           
+            vm.onCursorChanged(vm.matchInfo);           
             //vm._mouseleave = hd;
             function hd(e) {
-                var self = e.target;
-                var info = _eventHandler[e.type].call(self, e, vm)
-
-                info.invoke.call(self, vm, info.matchInfo);
-                if (info != undefined && !info.bubby) {
-
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return false;
-                }
+                return globalEventHandler(vm,e)             
             }
             vm._keyup = hd;
             vm._keydown = hd;
@@ -56,7 +47,8 @@
         onFocus: false, //for select start.
         onDefault: false, //use press to select the first one. it should  return default one.
         onLeave: avalon.noop,
-        onInit: avalon.noop,
+        onInit: avalon.noop,//这个应该被抛弃
+        onCursorChanged:avalon.noop,//当游标改变的时候，就会发出这个时间
         matches: [{
             start: "@",
             end: " ",

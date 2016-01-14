@@ -1,12 +1,12 @@
-/// <reference path="../_MatchInfo.js" />
-/// <reference path="../_globalDefined.js" />
-/// <reference path="../_eventHandler.js" />
-
 /*!
 jquery.keypopup Copyright(c) 2011 Leo.lu  MIT Licensed
 https://github.com/luqizheng/key4popup 
 */
 
+
+/// <reference path="../_MatchInfo.js" />
+/// <reference path="../_globalDefined.js" />
+/// <reference path="../_eventHandler.js" />
 (function (avalon) {
     
     var layoutId = "_keypopup_"
@@ -38,19 +38,10 @@ function log() {
         $ready: function (vm, ele) {
             vm.matchInfo = new MatchInfo(ele, vm);
             vm.matchInfo.content = ele.value;
-            vm.onInit(vm.matchInfo);           
+            vm.onCursorChanged(vm.matchInfo);           
             //vm._mouseleave = hd;
             function hd(e) {
-                var self = e.target;
-                var info = _eventHandler[e.type].call(self, e, vm)
-
-                info.invoke.call(self, vm, info.matchInfo);
-                if (info != undefined && !info.bubby) {
-
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return false;
-                }
+                return globalEventHandler(vm,e)             
             }
             vm._keyup = hd;
             vm._keydown = hd;
@@ -67,7 +58,8 @@ function log() {
         onFocus: false, //for select start.
         onDefault: false, //use press to select the first one. it should  return default one.
         onLeave: avalon.noop,
-        onInit: avalon.noop,
+        onInit: avalon.noop,//这个应该被抛弃
+        onCursorChanged:avalon.noop,//当游标改变的时候，就会发出这个时间
         matches: [{
             start: "@",
             end: " ",
@@ -91,20 +83,12 @@ function log() {
   
     /// <reference path="_layout.js" />
 /// <reference path="_MatchInfo.js"/>
-
-
-
-
-var _eventKey = {
+var _pubEvent = {
     match: {
-        create: function (matchInfo) {
+        create: function () {
             return {
-                //e: "match",
-                matchInfo: matchInfo,
                 invoke: function (options, matchInfo) { //defnined matcher.byCursor,
-                    if (options.matchInfo) {
-                        options.matchInfo.hide();
-                    }
+                    __hidePreMatchInfo(options)
                     options.matchInfo = matchInfo;
                     options._state = 1;
                     if (!options.onMatch) {
@@ -117,48 +101,37 @@ var _eventKey = {
         }
 
     },
-    leave: {
+    cursorChanged: {
         create: function (matchInfo) {
             return {
                 matchInfo: matchInfo,
                 invoke: function (options, matchInfo) {
-                    var self = this;
-                    options._state = 0;
-                    if (!options.onLeave) {
-                        log("please onLeave fucntion  in options")
+                    __hidePreMatchInfo(options);
+                    options.matchInfo = matchInfo;
+                    if (!options.onCursorChanged) {
+                        log("please onCursorChanged fucntion  in options")
                     }
-                    options.onLeave.call(self, matchInfo);
-                }
+                    options.onCursorChanged.call(self, matchInfo);
+                },
+                bubby: true
             }
         }
     },
     miss: {
         create: function () {
             return {
-                //e: "miss",
                 invoke: function (options) {
-                    if (!options.onMiss) {
-                        log("please onMiss fucntion  in options")
-                    }
-
-                    options.onMiss.call(this)
-                    options._state = 0;
+                    __defaultCall.call(this,options,"onMiss",0)                    
                 },
                 bubby: true
             }
         }
     },
     focus: {
-
         create: function () {
             return {
-                //e: "focus",
                 invoke: function (options) {
-                    if (!options.onFocus) {
-                        log("please onMiss fucntion  in options")
-                    }
-                    options.onFocus.call(this);
-                    options._state = 0;
+                    __defaultCall.call(this,options,"onFocus",0)
                 },
                 bubby: false
             }
@@ -167,30 +140,36 @@ var _eventKey = {
     "default": {
         create: function () {
             return {
-                //e: "default",
                 invoke: function (options) {
-                    if (!options.onDefault) {
+                    /*if (!options.onDefault) {
                         log("please onDefault fucntion  in options")
                     }
                     var d = options.onDefault.call(this, options);
                     if (d) {
                         options.matchInfo.set(d);
-                    }
+                    }*/
+                    var d=__defaultCall.call(this,options,"onDefault",1);
+                    options.matchInfo.set(d);
                 },
                 bubby: false
             }
         }
-    },
-    "noop": {
-        create: function () {
-            return {
-                //e: "noop",
-                invoke: function () { },
-                bubby: true
-            }
-        }
     }
 };
+
+var __hidePreMatchInfo = function (options) {
+    if (options.matchInfo.key) {
+        options.matchInfo.hide();
+    }
+}
+
+var __defaultCall = function (options, pubEvent,resetState) {
+    if (!options[pubEvent]) {
+        log("please define" + pubEvent + " fucntion  in options")
+    }    
+    options._state = resetState;
+    return options[pubEvent].call(this)
+}
     /// <reference path="_cursorMgr.js" />
 
 function MatchInfo(textarea, options) {
@@ -203,8 +182,7 @@ function MatchInfo(textarea, options) {
     this.offset = function () {
         this.left;
         this.top;
-    },
-    this.bookmark = null; // for ie678
+    },    
     this.scrollTop = 0;
     this.set = function (strName) {
 
@@ -225,11 +203,14 @@ function MatchInfo(textarea, options) {
     this.hide = function () {
         var options = this.options;
         //var matchInfo = this.options.matchInfo;
-        _eventKey.miss.create().invoke.call(this.self, options)
+        _pubEvent.miss.create().invoke.call(this.self, options)
         //_cursorMgr.setPos.call(this.self, matchInfo.content.length,matchInfo.scrollTop);
     }
     this.focus = function () {
-        _eventKey.miss.create().invoke.call(this.self, this.options);
+        _pubEvent.miss.create().invoke.call(this.self, this.options);
+    }
+    this.isMatch=function(){
+        return !!this.key;
     }
 
 }
@@ -286,59 +267,78 @@ var event_name_noop = "noop",
     event_name_focus = "focus",
     event_name_default = "default",
     event_name_match = "match";
+// bind to keyup,keydown mouseup
+function globalEventHandler(options, e) {
+
+    var self =
+        e.target, bubby = true,
+        obj = _eventHandler[e.type].call(self, e, options),
+        info;
+    if (obj.matchInfo) {
+        _pubEvent.cursorChanged.create().invoke.call(self, options, obj.matchInfo);
+    }
+    if (obj.eventName != event_name_noop) {
+        info = _pubEvent[obj.eventName].create();
+        bubby = info.bubby;
+        info.invoke.call(self, options, obj.matchInfo);
+    }
+
+    if (!bubby) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
+}
 
 var _eventHandler = {
-    keyup: function (e, options) {
-       
-        var inputKey = e.which,
-            //inputByIme = inputKey == 229,  //microsoft ime return 229.;
-            isCursorCtrlKey = inputKey == 38 || inputKey == 39 || inputKey == 40 || inputKey == 37 || inputKey == 8,
-            eventName = event_name_noop;
-        // up down left,right,BackSpace
-                                        
-        if (inputKey == 27 || inputKey == 32) {//ESC or space
-            eventName = event_name_miss
-        }
-        else {
-            var matchInfo = _matcher.byCursor.call(this, options, isCursorCtrlKey ? 1 : 0) //get the matcherInfo            
-            if (matchInfo)
-                eventName = event_name_match;
-        }
-        return _eventKey[eventName].create(matchInfo);
-
-    },
     keydown: function (e, options) {
-       
-        var evnName = event_name_noop, inputKey = e.which;
+        var evnName = event_name_noop,
+            inputKey = e.which
         if (options._state == 1) { //had execute onMatch, it should pop up the menu, but DONOT　fosuc on int.
             if (inputKey == 40) { //press-down
                 evnName = event_name_focus//focus the popup menu.
-            }
-            if (inputKey == 13) { //input enter get the popup menut default value;
+            } else if (inputKey == 13) { //input enter get the popup menut default value;
                 evnName = event_name_default;
             }
         }
-        return _eventKey[evnName].create();
+        return {//keydown不需要处理info
+            eventName: evnName,
+            matchInfo: false
+        }
+        //return _eventKey[evnName].create();
+    },
+    keyup: function (e, options) {
+        //handler curosr in textarea.
+        var inputKey = e.which,
+            //inputByIme = inputKey == 229,  //microsoft ime return 229.;
+            isCursorCtrlKey = inputKey == 38 || inputKey == 39 || inputKey == 40 || inputKey == 37 || inputKey == 8,
+            eventName = event_name_noop,
+            matchInfo = _matcher.byCursor.call(this, options, isCursorCtrlKey ? 1 : 0) //get the matcherInfo            
+        // up down left,right,BackSpace
+                                                
+        if (inputKey == 27 || inputKey == 32) {//ESC or space
+            eventName = event_name_miss
+        }
+        else if (matchInfo.isMatch()) { //if match keyup condition, key should have value, such as @ or #
+            eventName = event_name_match;
+        }
+        //return _eventKey[eventName].create(matchInfo);
+        return {
+            eventName: eventName,
+            matchInfo: matchInfo
+        }
     },
     mouseup: function (e, options) {
         _layout.reset.call(this, options);
         var info = _matcher.byCursor.call(this, options);
-        return info ? _eventKey.match.create(info) : _eventKey.noop.create();
-    },
-    mouseleave: function (e, options) {
-        _layout.reset.call(this, options);
-        var matchInfo = options.matchInfo;
-        if (options._status == 0 || !matchInfo) {
-            matchInfo = new MatchInfo(this, options)
+        //return _eventKey[info.isMatch() ? "match" : "noop"].create(info);
+        return {
+            matchInfo: info,
+            eventName: info.isMatch() ? event_name_match : event_name_noop
         }
-        matchInfo.content = _cursorMgr.getSelection.call(this);
-        if (!matchInfo.content) {
-            matchInfo.content = this.value;
-        }
-       
-        return _eventKey.leave.create(matchInfo);
-    }
+    } 
 }
+
     
 var atId;
 var _layout = {
@@ -384,6 +384,8 @@ var _matcher = { //all matcher fire by it;
             self = this,
             result = new MatchInfo(self, options),
             content = _cursorMgr.getSelection.call(self);
+            result.content = content;
+            result.scrollTop = self.scrollTop;
         for (var i = 0; i < options.matches.length; i++) {
             var item = options.matches[i];
             var start = item.start;
@@ -391,12 +393,10 @@ var _matcher = { //all matcher fire by it;
             var matches = content.match(reg);
             if (matches != null) {
                 //It should be match.
-                //var result = new MatchInfo(self, options)
-                result.content = content;
+                //var result = new MatchInfo(self, options)                
                 result.key = matches[0];
                 result.start = item.start;
-                result.end = item.end;
-                result.scrollTop = self.scrollTop;
+                result.end = item.end;              
 
                 var atId = _layout.render.call(this, options, result);
                 var tagele = document.getElementById(atId);
@@ -406,29 +406,8 @@ var _matcher = { //all matcher fire by it;
                 return result;
             }
         }
-    }
-    /*,
-    always: function (options, e) {
-        for (var i = 0; i < options.matches.length; i++) {
-            var item = options.matches[i];
-            if (item.isMatch(e)) {
-                return {
-                    start: item.start,
-                    end: item.end,
-                    key: item.start,
-                    content: _cursorMgr.getSelection.call(this, options)
-                }
-                //_matcher.always.call(this, options, { start: item.start, end: item.end });
-                //matchInfo.content = cursorMgr.getSelection.call(this, options);        
-                //_matcher._fire.call(this, options, matchInfo);
-                break;
-            }
-        }
-    }*/
-    /*_fire: function (options, matchInfo) {
-        layout.render.call(this, options, matchInfo);
-        fire.match.call(this, options, matchInfo);
-    }*/
+        return result;
+    } 
 
 }
     var _extendLib = {

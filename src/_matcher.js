@@ -14,6 +14,8 @@ var _matcher = { //all matcher fire by it;
             self = this,
             result = new MatchInfo(self, options),
             content = _cursorMgr.getSelection.call(self);
+            result.content = content;
+            result.scrollTop = self.scrollTop;
         for (var i = 0; i < options.matches.length; i++) {
             var item = options.matches[i];
             var start = item.start;
@@ -21,12 +23,10 @@ var _matcher = { //all matcher fire by it;
             var matches = content.match(reg);
             if (matches != null) {
                 //It should be match.
-                //var result = new MatchInfo(self, options)
-                result.content = content;
+                //var result = new MatchInfo(self, options)                
                 result.key = matches[0];
                 result.start = item.start;
-                result.end = item.end;
-                result.scrollTop = self.scrollTop;
+                result.end = item.end;              
 
                 var atId = _layout.render.call(this, options, result);
                 var tagele = document.getElementById(atId);
@@ -36,28 +36,7 @@ var _matcher = { //all matcher fire by it;
                 return result;
             }
         }
-    }
-    /*,
-    always: function (options, e) {
-        for (var i = 0; i < options.matches.length; i++) {
-            var item = options.matches[i];
-            if (item.isMatch(e)) {
-                return {
-                    start: item.start,
-                    end: item.end,
-                    key: item.start,
-                    content: _cursorMgr.getSelection.call(this, options)
-                }
-                //_matcher.always.call(this, options, { start: item.start, end: item.end });
-                //matchInfo.content = cursorMgr.getSelection.call(this, options);        
-                //_matcher._fire.call(this, options, matchInfo);
-                break;
-            }
-        }
-    }*/
-    /*_fire: function (options, matchInfo) {
-        layout.render.call(this, options, matchInfo);
-        fire.match.call(this, options, matchInfo);
-    }*/
+        return result;
+    } 
 
 }

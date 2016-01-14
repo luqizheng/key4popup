@@ -11,7 +11,7 @@ var gulp = require("gulp"),
     tsc = require("gulp-typescript"),
     webpack = require("webpack"),
     gfi = require("gulp-file-insert");;
-var version = "1.1" //当前版本号
+var version = "1.2" //当前版本号
 var now = new Date();  //构建日期
 var date = now.getFullYear() + "." + (now.getMonth() + 1) + "." + now.getDate()
 

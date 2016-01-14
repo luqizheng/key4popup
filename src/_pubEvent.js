@@ -1,19 +1,11 @@
 /// <reference path="_layout.js" />
 /// <reference path="_MatchInfo.js"/>
-
-
-
-
-var _eventKey = {
+var _pubEvent = {
     match: {
-        create: function (matchInfo) {
+        create: function () {
             return {
-                //e: "match",
-                matchInfo: matchInfo,
                 invoke: function (options, matchInfo) { //defnined matcher.byCursor,
-                    if (options.matchInfo) {
-                        options.matchInfo.hide();
-                    }
+                    __hidePreMatchInfo(options)
                     options.matchInfo = matchInfo;
                     options._state = 1;
                     if (!options.onMatch) {
@@ -26,48 +18,37 @@ var _eventKey = {
         }
 
     },
-    leave: {
+    cursorChanged: {
         create: function (matchInfo) {
             return {
                 matchInfo: matchInfo,
                 invoke: function (options, matchInfo) {
-                    var self = this;
-                    options._state = 0;
-                    if (!options.onLeave) {
-                        log("please onLeave fucntion  in options")
+                    __hidePreMatchInfo(options);
+                    options.matchInfo = matchInfo;
+                    if (!options.onCursorChanged) {
+                        log("please onCursorChanged fucntion  in options")
                     }
-                    options.onLeave.call(self, matchInfo);
-                }
+                    options.onCursorChanged.call(self, matchInfo);
+                },
+                bubby: true
             }
         }
     },
     miss: {
         create: function () {
             return {
-                //e: "miss",
                 invoke: function (options) {
-                    if (!options.onMiss) {
-                        log("please onMiss fucntion  in options")
-                    }
-
-                    options.onMiss.call(this)
-                    options._state = 0;
+                    __defaultCall.call(this,options,"onMiss",0)                    
                 },
                 bubby: true
             }
         }
     },
     focus: {
-
         create: function () {
             return {
-                //e: "focus",
                 invoke: function (options) {
-                    if (!options.onFocus) {
-                        log("please onMiss fucntion  in options")
-                    }
-                    options.onFocus.call(this);
-                    options._state = 0;
+                    __defaultCall.call(this,options,"onFocus",0)
                 },
                 bubby: false
             }
@@ -76,27 +57,33 @@ var _eventKey = {
     "default": {
         create: function () {
             return {
-                //e: "default",
                 invoke: function (options) {
-                    if (!options.onDefault) {
+                    /*if (!options.onDefault) {
                         log("please onDefault fucntion  in options")
                     }
                     var d = options.onDefault.call(this, options);
                     if (d) {
                         options.matchInfo.set(d);
-                    }
+                    }*/
+                    var d=__defaultCall.call(this,options,"onDefault",1);
+                    options.matchInfo.set(d);
                 },
                 bubby: false
             }
         }
-    },
-    "noop": {
-        create: function () {
-            return {
-                //e: "noop",
-                invoke: function () { },
-                bubby: true
-            }
-        }
     }
 };
+
+var __hidePreMatchInfo = function (options) {
+    if (options.matchInfo.key) {
+        options.matchInfo.hide();
+    }
+}
+
+var __defaultCall = function (options, pubEvent,resetState) {
+    if (!options[pubEvent]) {
+        log("please define" + pubEvent + " fucntion  in options")
+    }    
+    options._state = resetState;
+    return options[pubEvent].call(this)
+}

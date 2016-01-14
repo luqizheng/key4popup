@@ -60,33 +60,28 @@
     </div>
 
 
-    <button id='test'>test</button>
+    
     <script type="text/javascript">
         $(document).mouseup(function(e){
             console.log("body accept click for hide the pop up")
-//	        cur_matchInfo && cur_matchInfo.hide();
-	   });
-       
+	       exampleVM.$curMatchInfo.hide();
+	   });      
       
        
-       $("#popupTopic").click(function(){
-           $popMenu = $("#topic")
-          var offset=$(this).offset();
-           $popMenu
-           .css("left",offset.left)
-           .css("top",offset.top)
-           .show();
-           cur_matchInfo.start="#";
-           cur_matchInfo.end="# ";               
+       $("#popupTopic").click(function(){          
+           exampleVM.$curMatchInfo.start="#";
+           exampleVM.$curMatchInfo.end="# ";
+           exampleVM.$curMatchInfo.set("随便插一个话题")  
        })
         var $popMenu;
-        var cur_matchInfo;
+        
         var exampleVM=avalon.define({
             $id:"example",
+            $curMatchInfo:{}, //保留当前matchInfo，用于后继操作
             content:"汽油涨价了，苹果涨价了@娃娃造型 ，鸡蛋涨价了，萝卜涨价了，方便面涨价了@文澜 我们欣喜的发现，空气不但没有涨价，而且里面的料还越来越多了.. ..但中国人还要坚强地活下去，因为墓地也涨价了",            
             textConfig:{
-                onMatch:function(matchInfo){  
-                    cur_matchInfo=matchInfo; 
+                onMatch:function(matchInfo){ 
+                     
                      var pos=matchInfo.offset;
                     $popMenu=$(matchInfo.start=="@"?"#name":"#topic");             
                     $popMenu.children().removeClass("active");
@@ -107,12 +102,9 @@
                 onDefault:function(){                
                     var text=$popMenu.children("a:first").attr("href").substr(1);
                     return text;
-                }                ,
-                onLeave:function(hehe){
-                    cur_matchInfo=hehe; 
-                },
-                onInit:function(matchInfo){                    
-                    cur_matchInfo=matchInfo;
+                },              
+                onCursorChanged:function(matchInfo){                    
+                    exampleVM.$curMatchInfo = matchInfo; 
                 }
             }
         });
@@ -124,7 +116,7 @@
 		$("#name,#topic").keyup(function(e){			
 			if(e.which == 27 ){ //ESC
 				$(this).hide();
-                $("textarea").keypopup('focus')
+                exampleVM.$curMatchInfo.focus();
 				return false;
 			}
 		
@@ -138,7 +130,7 @@
 				break;	
               case 13:
                 var text=$this.attr("href").substr(1);                
-                $("textarea").keypopup('set',text)
+                exampleVM.$curMatchInfo.set(text);
                 break;		  
 		   }	
 		   if($nextActive.length!=0)
@@ -158,12 +150,11 @@
             }
         })
         .children("a").click(function(){
-            var text=$(this).attr("href").substr(1);                    
-            cur_matchInfo.set(text);   
+            var text=$(this).attr("href").substr(1);                   
+            
+            exampleVM.$curMatchInfo.set(text);
             
         })
-        
-     
     </script>
 
 

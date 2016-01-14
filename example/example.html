@@ -13,7 +13,7 @@
 
 <body>
 
- <button id='test'>test</button>
+    <button id='test'>test</button>
     <div class=container>
         <h1>Example 1</h1>
         <form>
@@ -25,7 +25,7 @@
         </form>
 
     </div>
-
+    <button type=button id='popupTopic'>#</button>
     <div class="list-group" style="position:absolute;display:none" id="name">
         <a href="#Michael" class="list-group-item active">Michael</a>
         <a href="#Leo" class="list-group-item">Leo</a>
@@ -47,6 +47,7 @@
         $("body").mouseup(function(e){
 	           	$('textarea').keypopup('hide');
 	       });
+        var curMatchInfo=null;
         var $popMenu
         $('textarea').keypopup({
 			onMatch:function(matchInfo){
@@ -72,11 +73,14 @@
                 var text=$popMenu.children("a:first").attr("href").substr(1);
                 return text;
             },
-            onLeave:function(matchInfo){
+            onCursorChanged:function(matchInfo){
+                curMatchInfo=matchInfo;
                 console.log("set the default matchInfo")
             }
                         
 		});	
+        
+        //popup menu
 		$("#name,#topic").keyup(function(e){			
 			if(e.which == 27 ){ //ESC
 				$(this).hide();
@@ -118,6 +122,13 @@
             var text=$(this).attr("href").substr(1);
             $("textarea").keypopup('set',text)
             
+        })
+        
+        $("#popupTopic").click(function(){
+            curMatchInfo.key="#";
+            curMatchInfo.start="#";
+            curMatchInfo.end="# "
+            $('textarea').keypopup('set',"随便差个话题");
         })
     </script>
 
