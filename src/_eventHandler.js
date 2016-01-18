@@ -33,7 +33,7 @@ function globalEventHandler(options, e) {
 }
 
 var _eventHandler = {
-    keydown: function (e, options) {
+    keydown: function (e, options) {        
         var evnName = event_name_noop,
             inputKey = e.which
         if (options._state == 1) { //had execute onMatch, it should pop up the menu, but DONOT　fosuc on int.

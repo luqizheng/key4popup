@@ -88,13 +88,8 @@ var _pubEvent = {
         create: function () {
             return {
                 invoke: function (options, matchInfo) { //defnined matcher.byCursor,
-                    __hidePreMatchInfo(options)
-                    options.matchInfo = matchInfo;
-                    options._state = 1;
-                    if (!options.onMatch) {
-                        log("please onMatch fucntion  in options")
-                    }
-                    options.onMatch.call(self, matchInfo);
+                    _setMatchInfoAndCall(options, matchInfo)
+                    _callEvent(options, "onMatch", 1)
                 },
                 bubby: false
             }
@@ -106,12 +101,8 @@ var _pubEvent = {
             return {
                 matchInfo: matchInfo,
                 invoke: function (options, matchInfo) {
-                    __hidePreMatchInfo(options);
-                    options.matchInfo = matchInfo;
-                    if (!options.onCursorChanged) {
-                        log("please onCursorChanged fucntion  in options")
-                    }
-                    options.onCursorChanged.call(self, matchInfo);
+                    _setMatchInfoAndCall(options, matchInfo)
+                    _callEvent(options, "onCursorChanged");
                 },
                 bubby: true
             }
@@ -121,7 +112,7 @@ var _pubEvent = {
         create: function () {
             return {
                 invoke: function (options) {
-                    __defaultCall.call(this,options,"onMiss",0)                    
+                    _callEvent.call(this, options, "onMiss", 0)
                 },
                 bubby: true
             }
@@ -131,7 +122,7 @@ var _pubEvent = {
         create: function () {
             return {
                 invoke: function (options) {
-                    __defaultCall.call(this,options,"onFocus",0)
+                    _callEvent.call(this, options, "onFocus", 0)
                 },
                 bubby: false
             }
@@ -141,15 +132,10 @@ var _pubEvent = {
         create: function () {
             return {
                 invoke: function (options) {
-                    /*if (!options.onDefault) {
-                        log("please onDefault fucntion  in options")
-                    }
-                    var d = options.onDefault.call(this, options);
+                    var d = _callEvent.call(this, options, "onDefault", 1);
                     if (d) {
                         options.matchInfo.set(d);
-                    }*/
-                    var d=__defaultCall.call(this,options,"onDefault",1);
-                    options.matchInfo.set(d);
+                    }
                 },
                 bubby: false
             }
@@ -157,18 +143,20 @@ var _pubEvent = {
     }
 };
 
-var __hidePreMatchInfo = function (options) {
+var _setMatchInfoAndCall = function (options, matchInfo) {
     if (options.matchInfo.key) {
         options.matchInfo.hide();
     }
+    options.matchInfo = matchInfo;
 }
 
-var __defaultCall = function (options, pubEvent,resetState) {
+var _callEvent = function (options, pubEvent, resetState) {
     if (!options[pubEvent]) {
         log("please define" + pubEvent + " fucntion  in options")
-    }    
-    options._state = resetState;
-    return options[pubEvent].call(this)
+    }
+    if (resetState !== undefined)
+        options._state = resetState;
+    return options[pubEvent].call(this, options.matchInfo);
 }
     /// <reference path="_cursorMgr.js" />
 
@@ -291,7 +279,7 @@ function globalEventHandler(options, e) {
 }
 
 var _eventHandler = {
-    keydown: function (e, options) {
+    keydown: function (e, options) {        
         var evnName = event_name_noop,
             inputKey = e.which
         if (options._state == 1) { //had execute onMatch, it should pop up the menu, but DONOT　fosuc on int.
