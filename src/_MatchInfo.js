@@ -10,10 +10,9 @@ function MatchInfo(textarea, options) {
     this.offset = function () {
         this.left;
         this.top;
-    },    
+    },
     this.scrollTop = 0;
-    this.set = function (strName) {
-
+    this.set = function (strName) {        
         var self = this.self,
             options = this.options,
             matchInfo = this,
@@ -34,10 +33,10 @@ function MatchInfo(textarea, options) {
         _pubEvent.miss.create().invoke.call(this.self, options)
         //_cursorMgr.setPos.call(this.self, matchInfo.content.length,matchInfo.scrollTop);
     }
-    this.focus = function () {
+    this.focus = function () {        
         _pubEvent.miss.create().invoke.call(this.self, this.options);
     }
-    this.isMatch=function(){
+    this.isMatch = function () {
         return !!this.key;
     }
 

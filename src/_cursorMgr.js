@@ -32,11 +32,30 @@ var _cursorMgr = {
             var range = self.createTextRange()
                 , action = 'character'
             range.collapse(true);
-            range.moveStart(action, newLength);            
+            range.moveStart(action, newLength);
             range.select();
-
-
         }
-
+        //fireEvent(self);
     }
 }
+/*
+function fireEvent(element) {
+    var event; // The custom event that will be created
+
+    if (document.createEvent) {
+        event = document.createEvent("KeyboardEvent");
+        event.initEvent("keydown", true, true);
+    } else {
+        event = document.createEventObject();
+        event.eventType = "keydown";
+    }
+    event.keyCode = 32;
+    event.which=32;
+    event.eventName = "keydown";
+
+    if (document.createEvent) {
+        element.dispatchEvent(event);
+    } else {
+        element.fireEvent("on" + event.eventType, event);
+    }
+}*/

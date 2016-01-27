@@ -51,7 +51,9 @@ var _pubEvent = {
                 invoke: function (options) {
                     var d = _callEvent.call(this, options, "onDefault", 1);
                     if (d) {
-                        options.matchInfo.set(d);
+                        options.matchInfo.self.blur();
+                        options.matchInfo.set(d);                        
+                        options.matchInfo.self.focus();
                     }
                 },
                 bubby: false

@@ -142,7 +142,9 @@ var _pubEvent = {
                 invoke: function (options) {
                     var d = _callEvent.call(this, options, "onDefault", 1);
                     if (d) {
-                        options.matchInfo.set(d);
+                        options.matchInfo.self.blur();
+                        options.matchInfo.set(d);                        
+                        options.matchInfo.self.focus();
                     }
                 },
                 bubby: false
@@ -178,10 +180,9 @@ function MatchInfo(textarea, options) {
     this.offset = function () {
         this.left;
         this.top;
-    },    
+    },
     this.scrollTop = 0;
-    this.set = function (strName) {
-
+    this.set = function (strName) {        
         var self = this.self,
             options = this.options,
             matchInfo = this,
@@ -202,10 +203,10 @@ function MatchInfo(textarea, options) {
         _pubEvent.miss.create().invoke.call(this.self, options)
         //_cursorMgr.setPos.call(this.self, matchInfo.content.length,matchInfo.scrollTop);
     }
-    this.focus = function () {
+    this.focus = function () {        
         _pubEvent.miss.create().invoke.call(this.self, this.options);
     }
-    this.isMatch=function(){
+    this.isMatch = function () {
         return !!this.key;
     }
 
@@ -244,14 +245,33 @@ var _cursorMgr = {
             var range = self.createTextRange()
                 , action = 'character'
             range.collapse(true);
-            range.moveStart(action, newLength);            
+            range.moveStart(action, newLength);
             range.select();
-
-
         }
-
+        //fireEvent(self);
     }
 }
+/*
+function fireEvent(element) {
+    var event; // The custom event that will be created
+
+    if (document.createEvent) {
+        event = document.createEvent("KeyboardEvent");
+        event.initEvent("keydown", true, true);
+    } else {
+        event = document.createEventObject();
+        event.eventType = "keydown";
+    }
+    event.keyCode = 32;
+    event.which=32;
+    event.eventName = "keydown";
+
+    if (document.createEvent) {
+        element.dispatchEvent(event);
+    } else {
+        element.fireEvent("on" + event.eventType, event);
+    }
+}*/
     /// <reference path="_matcher.js" />
 /// <reference path="_layout.js" />
 /// <reference path="_pubEvent.js"/>
@@ -282,6 +302,7 @@ function globalEventHandler(options, e) {
     if (!bubby) {
         e.preventDefault();
         e.stopPropagation();
+        avalon.log("cancel pop.")
         return false;
     }
 }
@@ -289,7 +310,7 @@ function globalEventHandler(options, e) {
 var _eventHandler = {
     keydown: function (e, options) {        
         var evnName = event_name_noop,
-            inputKey = e.which
+            inputKey =e.keyCode || e.which
         if (options._state == 1) { //had execute onMatch, it should pop up the menu, but DONOT　fosuc on int.
             if (inputKey == 40) { //press-down
                 evnName = event_name_focus//focus the popup menu.

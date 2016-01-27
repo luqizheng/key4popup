@@ -40,6 +40,10 @@
             <div class=form-action>
                 <button type=button id='popupTopic'>#</button>
             </div>
+
+            <div>
+                <button type="button" ms-click="submit">submit</button>
+            </div>
         </form>
 
     </div>
@@ -60,7 +64,7 @@
     </div>
 
 
-    
+
     <script type="text/javascript">
         $(document).mouseup(function(e){
             console.log("body accept click for hide the pop up")
@@ -106,6 +110,9 @@
                 onCursorChanged:function(matchInfo){                    
                     exampleVM.$curMatchInfo = matchInfo; 
                 }
+            }
+            ,submit:function(){
+                alert(exampleVM.content);
             }
         });
         

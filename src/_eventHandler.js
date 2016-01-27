@@ -28,6 +28,7 @@ function globalEventHandler(options, e) {
     if (!bubby) {
         e.preventDefault();
         e.stopPropagation();
+        avalon.log("cancel pop.")
         return false;
     }
 }
@@ -35,7 +36,7 @@ function globalEventHandler(options, e) {
 var _eventHandler = {
     keydown: function (e, options) {        
         var evnName = event_name_noop,
-            inputKey = e.which
+            inputKey =e.keyCode || e.which
         if (options._state == 1) { //had execute onMatch, it should pop up the menu, but DONOT　fosuc on int.
             if (inputKey == 40) { //press-down
                 evnName = event_name_focus//focus the popup menu.

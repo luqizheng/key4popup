@@ -30,7 +30,7 @@
             vm.onCursorChanged(vm.matchInfo);           
             //vm._mouseleave = hd;
             function hd(e) {
-                return globalEventHandler(vm,e)             
+                return globalEventHandler(vm, e)
             }
             vm._keyup = hd;
             vm._keydown = hd;
@@ -48,7 +48,7 @@
         onDefault: false, //use press to select the first one. it should  return default one.
         onLeave: avalon.noop,
         onInit: avalon.noop,//这个应该被抛弃
-        onCursorChanged:avalon.noop,//当游标改变的时候，就会发出这个时间
+        onCursorChanged: avalon.noop,//当游标改变的时候，就会发出这个时间
         matches: [{
             start: "@",
             end: " ",
