@@ -22,7 +22,7 @@
         $replace: 1,
         $ta: "",
         $$template: function (vm, ol) {
-            return this.$ta.replace(">", 'ms-on-keyup="_keyup($event)" ms-on-keydown="_keydown($event)" ms-on-mouseup="_mouseup($event)" ms-on-mouseleave="_mouseleave" on-init="onInit">');
+            return this.$ta.replace(">", 'ms-on-keyup="_keyup($event)" ms-on-keydown="_keydown($event)" ms-on-mouseup="_mouseup($event)" on-init="onInit">');
         },
         $ready: function (vm, ele) {
             vm.matchInfo = new MatchInfo(ele, vm);
@@ -40,13 +40,11 @@
         _keyup: false,
         _keydown: false,
         _mouseup: false,
-        _layout: null,
-        _mouseleave: avalon.noop,
+        _layout: null,        
         onMatch: false, // match pop up condition
         onMiss: false, // missmatch ,
         onFocus: false, //for select start.
-        onDefault: false, //use press to select the first one. it should  return default one.
-        onLeave: avalon.noop,
+        onDefault: false, //use press to select the first one. it should  return default one.        
         onInit: avalon.noop,//这个应该被抛弃
         onCursorChanged: avalon.noop,//当游标改变的时候，就会发出这个时间
         matches: [{
