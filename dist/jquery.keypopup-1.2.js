@@ -301,8 +301,7 @@ function globalEventHandler(options, e) {
 
     if (!bubby) {
         e.preventDefault();
-        e.stopPropagation();
-        avalon.log("cancel pop.")
+        e.stopPropagation();        
         return false;
     }
 }
